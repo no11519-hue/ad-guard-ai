@@ -1,0 +1,1 @@
+// All logic integrated into index.html for zero-build deployment compatibility.
