@@ -3,134 +3,282 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AD-Guard AI (No API Demo)</title>
-
-  <!-- favicon 404 제거 -->
+  <title>AD-Guard AI</title>
   <link rel="icon" href="data:,">
 
-  <!-- Tailwind CDN (데모용) -->
+  <!-- Pretendard (optional, makes it look more premium) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+  <!-- Tailwind CDN (demo ok) -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html, body { font-family: Pretendard, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+  </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900">
-  <header class="sticky top-0 z-10 border-b bg-white/80 backdrop-blur">
-    <div class="mx-auto max-w-4xl px-4 py-4 flex items-center justify-between">
-      <div>
-        <div class="text-lg font-extrabold">AD-Guard AI</div>
-        <div class="text-xs text-slate-500">데모 모드(키 없이 동작) · 규칙 기반 점검</div>
+  <!-- Header -->
+  <header class="sticky top-0 z-20 border-b border-slate-200/70 bg-white/70 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black">AD</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-extrabold tracking-tight">AD-Guard AI</h1>
+            <span class="text-[11px] px-2 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">DEMO · No API</span>
+          </div>
+          <p class="text-xs text-slate-500">광고 문구 붙여넣기 → 라벨 문구 + 위험표현 교정 + 플랫폼 문구를 10초 안에</p>
+        </div>
       </div>
-      <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700">FREE</span>
+
+      <div class="flex items-center gap-2">
+        <button id="howBtn" class="text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50">
+          사용법
+        </button>
+        <button id="proBtn" class="text-sm px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800">
+          PRO (준비중)
+        </button>
+      </div>
     </div>
   </header>
 
-  <main class="mx-auto max-w-4xl px-4 py-6 space-y-4">
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-      <div class="flex flex-wrap gap-2 mb-3">
-        <button id="ex1" class="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200">예시1(다이어트)</button>
-        <button id="ex2" class="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200">예시2(화장품)</button>
-        <button id="ex3" class="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200">예시3(AI서비스)</button>
-      </div>
-
-      <textarea
-        id="input"
-        class="w-full min-h-[160px] rounded-xl border border-slate-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-        placeholder="여기에 광고 문구를 붙여넣으세요…"
-      ></textarea>
-
-      <div class="mt-3 flex items-center gap-2">
-        <button
-          id="analyzeBtn"
-          class="px-4 py-2 rounded-xl font-bold text-sm text-white bg-slate-900 hover:bg-slate-800"
-        >
-          검사
-        </button>
-        <div id="hint" class="text-xs text-slate-500">
-          ※ AI 호출 없이 규칙 기반으로 즉시 점검합니다.
+  <!-- Top Hero -->
+  <section class="mx-auto max-w-6xl px-4 pt-6">
+    <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h2 class="text-xl md:text-2xl font-black tracking-tight">
+            AI 광고 <span class="text-slate-900">표시문구(라벨)</span> + <span class="text-slate-900">안전 점검</span>을 한 번에
+          </h2>
+          <p class="mt-1 text-sm text-slate-600">
+            이 데모는 <b>API 없이</b> 규칙 기반으로 동작합니다. (안정/빠름) · PRO는 추후 AI 기반으로 확장 가능합니다.
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <button id="fillEx1" class="text-xs px-3 py-2 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200">예시(다이어트)</button>
+          <button id="fillEx2" class="text-xs px-3 py-2 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200">예시(화장품)</button>
+          <button id="fillEx3" class="text-xs px-3 py-2 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200">예시(AI서비스)</button>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="outputCard" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-      <div class="flex items-center justify-between mb-3">
-        <div class="font-bold">분석 결과</div>
-        <button
-          id="copyBtn"
-          class="text-xs px-3 py-1.5 rounded-full bg-slate-900 text-white hover:bg-slate-800"
-        >
-          결과 전체 복사
-        </button>
-      </div>
-      <pre id="output" class="whitespace-pre-wrap text-sm leading-6 text-slate-800"></pre>
-      <div class="mt-3 text-xs text-slate-500" id="sourceLine"></div>
-    </section>
+  <!-- Main -->
+  <main class="mx-auto max-w-6xl px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Left: Input -->
+      <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-base font-extrabold">광고 문구 입력</h3>
+            <p class="text-xs text-slate-500 mt-1">문구/스크립트/설명 모두 가능 · 길어도 됩니다</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="category" class="text-xs px-3 py-2 rounded-xl border border-slate-200 bg-white">
+              <option value="general">일반</option>
+              <option value="diet">다이어트</option>
+              <option value="beauty">뷰티/화장품</option>
+              <option value="finance">금융/수익</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <textarea
+            id="input"
+            class="w-full min-h-[220px] rounded-2xl border border-slate-200 p-4 text-sm leading-6 focus:outline-none focus:ring-4 focus:ring-slate-200"
+            placeholder="예) 이거 하나면 3일 안에 -5kg! 100% 보장! 오늘만 반값!"
+          ></textarea>
+        </div>
+
+        <div class="mt-4 flex flex-col sm:flex-row gap-2">
+          <button
+            id="analyzeBtn"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <span id="analyzeText">검사하기</span>
+            <span id="spinner" class="hidden h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></span>
+          </button>
+
+          <button
+            id="applySafeBtn"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-slate-200 bg-white font-bold hover:bg-slate-50"
+            title="위험 표현을 완화한 버전으로 입력창을 자동 수정합니다"
+          >
+            안전 버전으로 바꾸기
+          </button>
+
+          <button
+            id="clearBtn"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50"
+          >
+            지우기
+          </button>
+        </div>
+
+        <div class="mt-4 rounded-2xl bg-slate-50 border border-slate-200 p-4">
+          <div class="text-xs font-bold text-slate-700">이 데모가 해주는 것</div>
+          <ul class="mt-2 text-xs text-slate-600 space-y-1 list-disc pl-4">
+            <li>AI 광고 라벨(표시문구) 짧게/길게 2종</li>
+            <li>오해/과장으로 보일 수 있는 표현 3개 찾아 대체문장 제안</li>
+            <li>인스타/블로그/카톡용 문구로 변환</li>
+            <li>바로 적용 체크리스트 5개</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Right: Output -->
+      <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-base font-extrabold">분석 결과</h3>
+            <p class="text-xs text-slate-500 mt-1">카드별로 복사해서 바로 붙여넣기 하세요</p>
+          </div>
+          <button
+            id="copyAllBtn"
+            class="text-xs px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50"
+            disabled
+          >
+            결과 전체 복사
+          </button>
+        </div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="mt-6 rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8">
+          <div class="text-sm font-extrabold">아직 결과가 없습니다</div>
+          <div class="mt-2 text-xs text-slate-600 leading-6">
+            왼쪽에 광고 문구를 넣고 <b>검사하기</b>를 눌러주세요.<br>
+            (API 없이도 바로 결과가 나옵니다)
+          </div>
+        </div>
+
+        <!-- Results container -->
+        <div id="results" class="hidden mt-6 space-y-4"></div>
+
+        <div class="mt-4 text-[11px] text-slate-500">
+          ※ 본 결과는 법률 자문이 아닌 일반적인 안전 가이드입니다.
+        </div>
+      </section>
+    </div>
   </main>
 
-  <footer class="py-8 text-center text-xs text-slate-500">
-    © AD-Guard AI · Demo (No API)
-  </footer>
+  <!-- Modal -->
+  <div id="modalOverlay" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm">
+    <div class="min-h-full flex items-center justify-center p-4">
+      <div class="w-full max-w-lg rounded-3xl bg-white border border-slate-200 shadow-xl overflow-hidden">
+        <div class="p-5 border-b border-slate-200 flex items-start justify-between">
+          <div>
+            <div id="modalTitle" class="text-base font-extrabold">안내</div>
+            <div id="modalSub" class="text-xs text-slate-500 mt-1"> </div>
+          </div>
+          <button id="modalClose" class="text-slate-500 hover:text-slate-900">닫기</button>
+        </div>
+        <div id="modalBody" class="p-5 text-sm text-slate-700 leading-7"></div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const SOURCE_LINE = '출처: AD-Guard AI (https://no11519-hue.github.io/ad-guard-ai/)';
-    document.getElementById('sourceLine').textContent = SOURCE_LINE;
 
-    const RULES = [
+    // ---- Rules ----
+    const BASE_RULES = [
       {
-        name: '확정/보장',
+        key: 'guarantee',
         regex: /(100%|무조건|보장|확실|완벽|전부|절대)/g,
         reason: '확정·보장 표현은 과장/오해로 해석될 수 있어요.',
         replace: '개인차가 있을 수 있으며 도움을 줄 수 있습니다.'
       },
       {
-        name: '단기간 과장',
+        key: 'fast',
         regex: /(하루|1일|2일|3일|단\\s*\\d+일|즉시|바로|순식간)/g,
         reason: '너무 빠른 결과를 단정하면 과장으로 보일 수 있어요.',
         replace: '사용 환경에 따라 체감 시점은 달라질 수 있습니다.'
       },
       {
-        name: '부작용 0',
+        key: 'noSideEffect',
         regex: /(부작용\\s*0%|부작용\\s*없음|안전\\s*보장)/g,
-        reason: '부작용 ‘없음/0%’ 단정은 위험해요.',
+        reason: '부작용 “없음/0%” 단정은 민감합니다.',
         replace: '사용자에 따라 반응이 다를 수 있습니다.'
       },
       {
-        name: '의학/치료 단정',
+        key: 'medical',
         regex: /(완치|치료|통증\\s*해결|병\\s*낫|약\\s*대신)/g,
         reason: '의학적 효능을 확정적으로 말하면 민감해요.',
         replace: '일상 케어에 도움을 줄 수 있습니다(개인차).'
       },
       {
-        name: '권위 과장',
+        key: 'authority',
         regex: /(의사\\s*인정|전문의\\s*추천|임상\\s*검증|논문\\s*입증|기적)/g,
         reason: '근거가 불명확하면 과장으로 오해될 수 있어요.',
         replace: '사용 후기/체감 사례를 바탕으로 안내드립니다(개인차).'
       }
     ];
 
-    function riskLevel(text) {
+    const EXTRA_RULES = {
+      diet: [
+        { regex: /(감량|다이어트\\s*성공|지방\\s*삭제|뱃살\\s*삭제)/g, reason: '체형/감량은 개인차가 커서 단정하면 위험해요.', replace: '개인차가 있을 수 있으며 식단·운동과 함께 도움을 줄 수 있습니다.' }
+      ],
+      beauty: [
+        { regex: /(주름\\s*삭제|잡티\\s*삭제|리프팅\\s*확정|동안\\s*보장)/g, reason: '피부 효능 단정은 과장으로 보일 수 있어요.', replace: '피부 컨디션에 따라 체감이 다를 수 있습니다.' }
+      ],
+      finance: [
+        { regex: /(수익\\s*보장|원금\\s*보장|무조건\\s*수익|손실\\s*없음)/g, reason: '수익/손실 단정은 특히 민감합니다.', replace: '성과는 시장/상황에 따라 달라질 수 있습니다.' }
+      ],
+      general: []
+    };
+
+    function escapeHtml(str) {
+      return (str || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function getRulesByCategory(cat) {
+      return BASE_RULES.concat(EXTRA_RULES[cat] || []);
+    }
+
+    function makeLabel() {
+      return {
+        short: 'AI광고 포함',
+        long: '본 광고의 일부 문구/이미지는 AI를 활용해 제작되었습니다.'
+      };
+    }
+
+    function riskLevel(text, rules) {
       let count = 0;
-      for (const r of RULES) {
+      for (const r of rules) {
         if (r.regex.test(text)) count += 1;
         r.regex.lastIndex = 0;
       }
-      if (count >= 3) return '위험';
-      if (count >= 1) return '주의';
-      return '안전';
+      if (count >= 3) return { level: '위험', tone: 'bg-rose-100 text-rose-700 border-rose-200' };
+      if (count >= 1) return { level: '주의', tone: 'bg-amber-100 text-amber-700 border-amber-200' };
+      return { level: '안전', tone: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
     }
 
-    function textReplaceOne(text, regex, replacement) {
-      regex.lastIndex = 0;
-      return text.replace(regex, replacement);
+    function softenText(text, rules) {
+      let softened = text;
+      for (const r of rules) {
+        softened = softened.replace(r.regex, r.replace);
+        r.regex.lastIndex = 0;
+      }
+      return softened;
     }
 
-    function pickRisks(text) {
+    function pickRisks(text, rules) {
       const hits = [];
-      for (const r of RULES) {
+      for (const r of rules) {
         const m = text.match(r.regex);
         if (m && m.length) {
           hits.push({
             phrase: m[0],
             reason: r.reason,
-            replace: textReplaceOne(text, r.regex, r.replace)
+            replace: text.replace(r.regex, r.replace)
           });
         }
       }
@@ -144,15 +292,8 @@
       return hits.slice(0, 3);
     }
 
-    function makeLabel() {
-      return {
-        short: 'AI광고 포함',
-        long: '본 광고의 일부 문구/이미지는 AI를 활용해 제작되었습니다.'
-      };
-    }
-
     function platformCopy(baseText) {
-      const short = baseText.replace(/\\s+/g, ' ').slice(0, 60);
+      const short = baseText.replace(/\\s+/g, ' ').slice(0, 70);
       return {
         insta: short + '… (개인차 있음)',
         blog: '아래 내용은 제품/서비스 안내이며, 개인차가 있을 수 있습니다.\\n핵심 포인트: ' + short,
@@ -160,29 +301,25 @@
       };
     }
 
-    function buildOutput(input) {
-      const lvl = riskLevel(input);
+    function buildResult(input, category) {
+      const rules = getRulesByCategory(category);
+      const badge = riskLevel(input, rules);
       const label = makeLabel();
-      const risks = pickRisks(input);
-
-      let softened = input;
-      for (const r of RULES) {
-        softened = softened.replace(r.regex, r.replace);
-        r.regex.lastIndex = 0;
-      }
+      const risks = pickRisks(input, rules);
+      const softened = softenText(input, rules);
       const pf = platformCopy(softened);
 
       const checklist = [
-        '‘100%/무조건/보장’ 같은 단정 표현 제거했나요?',
+        '‘100%/무조건/보장’ 같은 단정 표현을 제거했나요?',
         '단기간 결과(하루/3일/즉시)를 확정하지 않았나요?',
         '의학/치료/완치처럼 민감한 효능 단정이 없나요?',
         '개인차/사용환경 차이를 자연스럽게 넣었나요?',
-        '플랫폼에 맞게 길이/톤을 맞췄나요?'
+        '플랫폼별 길이/톤을 맞췄나요?'
       ];
 
-      return (
+      const allText =
 `# 1) 결과 요약
-- 위험도: ${lvl}
+- 위험도: ${badge.level}
 - 한 줄 코멘트: 강한 표현을 ‘개인차/도움’ 중심으로 완화하면 안전도가 올라갑니다.
 
 # 2) AI 광고 표기(라벨) 문구 2종
@@ -212,71 +349,294 @@
 - [ ] ${checklist[3]}
 - [ ] ${checklist[4]}
 
-본 결과는 법률 자문이 아닌 일반적인 안전 가이드입니다.`
-      );
+${SOURCE_LINE}
+본 결과는 법률 자문이 아닌 일반적인 안전 가이드입니다.`;
+
+      return { badge, label, risks, pf, checklist, softened, allText };
     }
 
-    const inputEl = document.getElementById('input');
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const outputCard = document.getElementById('outputCard');
-    const outputEl = document.getElementById('output');
-    const copyBtn = document.getElementById('copyBtn');
+    // ---- UI helpers ----
+    function card(title, rightHtml, bodyHtml) {
+      return `
+        <div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+            <div class="text-sm font-extrabold">${title}</div>
+            <div>${rightHtml || ''}</div>
+          </div>
+          <div class="p-4">${bodyHtml}</div>
+        </div>
+      `;
+    }
 
-    document.getElementById('ex1').onclick = () => {
+    function copyButton(text, label) {
+      const safe = escapeHtml(text);
+      const btnLabel = escapeHtml(label);
+      return `<button class="copyBtn text-xs px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800" data-copy="${safe}">${btnLabel}</button>`;
+    }
+
+    function renderResults(res) {
+      const badgeHtml = `<span class="text-xs px-2 py-1 rounded-full border ${res.badge.tone}">${res.badge.level}</span>`;
+
+      const summaryBody = `
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs text-slate-500">위험도</div>
+            <div class="mt-1 flex items-center gap-2">${badgeHtml}<span class="text-sm font-bold text-slate-800">요약 코멘트</span></div>
+            <div class="mt-2 text-sm text-slate-700 leading-7">
+              강한 표현을 <b>‘개인차/도움’</b> 중심으로 완화하면 안전도가 올라갑니다.
+            </div>
+          </div>
+        </div>
+      `;
+
+      const labelBody = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div class="text-xs text-slate-500">짧은 버전(15자 내외)</div>
+            <div class="mt-2 text-sm font-bold text-slate-900">${escapeHtml(res.label.short)}</div>
+            <div class="mt-3">${copyButton(res.label.short, '복사')}</div>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div class="text-xs text-slate-500">긴 버전(1~2문장)</div>
+            <div class="mt-2 text-sm font-bold text-slate-900">${escapeHtml(res.label.long)}</div>
+            <div class="mt-3">${copyButton(res.label.long, '복사')}</div>
+          </div>
+        </div>
+      `;
+
+      const riskItems = res.risks.map((r, idx) => `
+        <div class="rounded-2xl border border-slate-200 bg-white p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs text-slate-500">문제 표현 ${idx + 1}</div>
+              <div class="mt-1 text-sm font-extrabold text-slate-900">${escapeHtml(r.phrase)}</div>
+              <div class="mt-2 text-xs text-slate-600">${escapeHtml(r.reason)}</div>
+            </div>
+          </div>
+          <div class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+            <div class="text-xs text-slate-500">대체 문장</div>
+            <div class="mt-1 text-sm text-slate-900 leading-7">${escapeHtml(r.replace)}</div>
+            <div class="mt-3">${copyButton(r.replace, '대체 문장 복사')}</div>
+          </div>
+        </div>
+      `).join('');
+
+      const platformBody = `
+        <div class="grid grid-cols-1 gap-3">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-sm font-extrabold">인스타/쇼츠</div>
+              ${copyButton(res.pf.insta, '복사')}
+            </div>
+            <div class="mt-2 text-sm text-slate-800 leading-7">${escapeHtml(res.pf.insta)}</div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-sm font-extrabold">네이버/블로그</div>
+              ${copyButton(res.pf.blog, '복사')}
+            </div>
+            <pre class="mt-2 text-sm text-slate-800 leading-7 whitespace-pre-wrap">${escapeHtml(res.pf.blog)}</pre>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-sm font-extrabold">카톡/문자</div>
+              ${copyButton(res.pf.kakao, '복사')}
+            </div>
+            <pre class="mt-2 text-sm text-slate-800 leading-7 whitespace-pre-wrap">${escapeHtml(res.pf.kakao)}</pre>
+          </div>
+        </div>
+      `;
+
+      const checklistBody = `
+        <div class="grid grid-cols-1 gap-2">
+          ${res.checklist.map((c) => `
+            <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+              <input type="checkbox" class="h-4 w-4 rounded border-slate-300">
+              <span class="text-sm text-slate-800">${escapeHtml(c)}</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
+
+      const resultsHtml =
+        card('1) 결과 요약', '', summaryBody) +
+        card('2) AI 광고 표기(라벨) 문구', '', labelBody) +
+        card('3) 위험 표현 3개 & 대체 문장', '', riskItems) +
+        card('4) 플랫폼용 문구 변환', '', platformBody) +
+        card('5) 바로 적용 체크리스트', '', checklistBody);
+
+      return resultsHtml;
+    }
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl bg-slate-900 text-white text-sm shadow-lg';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1400);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('복사 완료!');
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        toast('복사 완료!');
+      }
+    }
+
+    // ---- DOM wiring ----
+    const inputEl = document.getElementById('input');
+    const categoryEl = document.getElementById('category');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const analyzeText = document.getElementById('analyzeText');
+    const spinner = document.getElementById('spinner');
+    const applySafeBtn = document.getElementById('applySafeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const emptyState = document.getElementById('emptyState');
+    const resultsWrap = document.getElementById('results');
+    const copyAllBtn = document.getElementById('copyAllBtn');
+
+    const howBtn = document.getElementById('howBtn');
+    const proBtn = document.getElementById('proBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalClose = document.getElementById('modalClose');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSub = document.getElementById('modalSub');
+    const modalBody = document.getElementById('modalBody');
+
+    function openModal(title, sub, bodyHtml) {
+      modalTitle.textContent = title;
+      modalSub.textContent = sub || '';
+      modalBody.innerHTML = bodyHtml;
+      modalOverlay.classList.remove('hidden');
+    }
+    function closeModal() {
+      modalOverlay.classList.add('hidden');
+    }
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
+    howBtn.addEventListener('click', () => {
+      openModal(
+        '사용법',
+        '3단계로 끝납니다',
+        `
+          <ol class="list-decimal pl-5 space-y-2 text-sm">
+            <li><b>광고 문구</b>를 왼쪽 입력창에 붙여넣습니다.</li>
+            <li><b>검사하기</b>를 누르면, 라벨/위험표현/플랫폼 문구가 카드로 나옵니다.</li>
+            <li>카드 오른쪽 <b>복사</b> 버튼으로 바로 붙여넣기 하시면 됩니다.</li>
+          </ol>
+          <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm">
+            이 버전은 <b>API 없이</b> 동작하는 데모입니다. PRO에서는 AI 기반 “플랫폼별 10개 버전 + 랜딩 문구”까지 확장할 수 있습니다.
+          </div>
+        `
+      );
+    });
+
+    proBtn.addEventListener('click', () => {
+      openModal(
+        'PRO (준비중)',
+        '유료 확장 모드에서 들어갈 것',
+        `
+          <div class="text-sm">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <b>PRO에 들어갈 기능(예시)</b>
+              <ul class="mt-2 list-disc pl-5 space-y-1">
+                <li>플랫폼별(인스타/네이버/유튜브) 버전 10개 자동 생성</li>
+                <li>랜딩페이지 히어로 문구 5개(AIDA)</li>
+                <li>업종별 금칙어/주의어 사전 매칭 강화</li>
+              </ul>
+            </div>
+            <div class="mt-3 text-xs text-slate-500">현재는 데모 안정성 때문에 API 호출을 제거한 상태입니다.</div>
+          </div>
+        `
+      );
+    });
+
+    document.getElementById('fillEx1').addEventListener('click', () => {
       inputEl.value = '이 제품만 먹으면 3일 안에 -5kg 무조건 감량! 부작용 0% 100% 보장. 오늘만 반값!';
-    };
-    document.getElementById('ex2').onclick = () => {
+    });
+    document.getElementById('fillEx2').addEventListener('click', () => {
       inputEl.value = '의사가 인정한 기적의 앰플! 1주일 만에 주름이 사라집니다. 임상으로 검증된 확실한 효과!';
-    };
-    document.getElementById('ex3').onclick = () => {
+    });
+    document.getElementById('fillEx3').addEventListener('click', () => {
       inputEl.value = 'AI가 광고 문구를 점검하고 표기 문구까지 만들어드립니다. 초보 사장님도 10초면 광고 문구를 더 안전하게 수정 가능!';
-    };
+    });
 
     let isLoading = false;
+    let lastAllText = '';
 
-    analyzeBtn.onclick = () => {
+    analyzeBtn.addEventListener('click', () => {
       const text = (inputEl.value || '').trim();
       if (!text) {
-        alert('광고 문구를 먼저 붙여넣어 주세요!');
+        toast('광고 문구를 먼저 넣어주세요.');
         return;
       }
       if (isLoading) return;
 
       isLoading = true;
       analyzeBtn.disabled = true;
-      analyzeBtn.textContent = '분석 중...';
-      outputCard.classList.add('hidden');
-      outputEl.textContent = '';
+      analyzeText.textContent = '분석 중...';
+      spinner.classList.remove('hidden');
+
+      emptyState.classList.add('hidden');
+      resultsWrap.classList.add('hidden');
+      resultsWrap.innerHTML = '';
+      copyAllBtn.disabled = true;
 
       setTimeout(() => {
-        const result = buildOutput(text);
-        outputEl.textContent = result;
-        outputCard.classList.remove('hidden');
+        const res = buildResult(text, categoryEl.value);
+        lastAllText = res.allText;
+
+        resultsWrap.innerHTML = renderResults(res);
+        resultsWrap.classList.remove('hidden');
+
+        // attach copy handlers
+        resultsWrap.querySelectorAll('.copyBtn').forEach((btn) => {
+          btn.addEventListener('click', () => copyToClipboard(btn.getAttribute('data-copy') || ''));
+        });
+
+        copyAllBtn.disabled = false;
 
         isLoading = false;
         analyzeBtn.disabled = false;
-        analyzeBtn.textContent = '검사';
-      }, 300);
-    };
+        analyzeText.textContent = '검사하기';
+        spinner.classList.add('hidden');
+      }, 320);
+    });
 
-    copyBtn.onclick = async () => {
-      const text = (outputEl.textContent || '').trim();
-      if (!text) return;
-      const finalText = text + '\\n\\n' + SOURCE_LINE;
+    copyAllBtn.addEventListener('click', () => {
+      if (!lastAllText) return;
+      copyToClipboard(lastAllText);
+    });
 
-      try {
-        await navigator.clipboard.writeText(finalText);
-        alert('복사 완료!');
-      } catch (e) {
-        const ta = document.createElement('textarea');
-        ta.value = finalText;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        alert('복사 완료!');
-      }
-    };
+    applySafeBtn.addEventListener('click', () => {
+      const text = (inputEl.value || '').trim();
+      if (!text) { toast('먼저 문구를 입력해주세요.'); return; }
+      const softened = softenText(text, getRulesByCategory(categoryEl.value));
+      inputEl.value = softened;
+      toast('안전 버전으로 바꿔드렸습니다.');
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      resultsWrap.innerHTML = '';
+      resultsWrap.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      copyAllBtn.disabled = true;
+      lastAllText = '';
+      toast('입력을 지웠습니다.');
+    });
   </script>
 </body>
 </html>
