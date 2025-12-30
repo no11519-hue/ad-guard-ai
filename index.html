@@ -3,60 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AD-Guard AI (Demo)</title>
+  <title>AD-Guard AI (No API Demo)</title>
 
-  <!-- Tailwind CDN -->
+  <!-- favicon 404 제거 -->
+  <link rel="icon" href="data:,">
+
+  <!-- Tailwind CDN (데모용) -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- React 18 UMD -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-  <!-- Babel (for JSX in a single file) -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 
 <body class="bg-slate-50 text-slate-900">
-  <div id="root"></div>
+  <header class="sticky top-0 z-10 border-b bg-white/80 backdrop-blur">
+    <div class="mx-auto max-w-4xl px-4 py-4 flex items-center justify-between">
+      <div>
+        <div class="text-lg font-extrabold">AD-Guard AI</div>
+        <div class="text-xs text-slate-500">데모 모드(키 없이 동작) · 규칙 기반 점검</div>
+      </div>
+      <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700">FREE</span>
+    </div>
+  </header>
 
-  <script type="text/babel">
-    const { useMemo, useState } = React;
+  <main class="mx-auto max-w-4xl px-4 py-6 space-y-4">
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+      <div class="flex flex-wrap gap-2 mb-3">
+        <button id="ex1" class="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200">예시1(다이어트)</button>
+        <button id="ex2" class="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200">예시2(화장품)</button>
+        <button id="ex3" class="text-xs px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200">예시3(AI서비스)</button>
+      </div>
 
-    const SOURCE_LINE = "출처: AD-Guard AI (https://no11519-hue.github.io/ad-guard-ai/)";
+      <textarea
+        id="input"
+        class="w-full min-h-[160px] rounded-xl border border-slate-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
+        placeholder="여기에 광고 문구를 붙여넣으세요…"
+      ></textarea>
 
-    // ---- 규칙 기반(키 없이) 점검 엔진 ----
+      <div class="mt-3 flex items-center gap-2">
+        <button
+          id="analyzeBtn"
+          class="px-4 py-2 rounded-xl font-bold text-sm text-white bg-slate-900 hover:bg-slate-800"
+        >
+          검사
+        </button>
+        <div id="hint" class="text-xs text-slate-500">
+          ※ AI 호출 없이 규칙 기반으로 즉시 점검합니다.
+        </div>
+      </div>
+    </section>
+
+    <section id="outputCard" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="font-bold">분석 결과</div>
+        <button
+          id="copyBtn"
+          class="text-xs px-3 py-1.5 rounded-full bg-slate-900 text-white hover:bg-slate-800"
+        >
+          결과 전체 복사
+        </button>
+      </div>
+      <pre id="output" class="whitespace-pre-wrap text-sm leading-6 text-slate-800"></pre>
+      <div class="mt-3 text-xs text-slate-500" id="sourceLine"></div>
+    </section>
+  </main>
+
+  <footer class="py-8 text-center text-xs text-slate-500">
+    © AD-Guard AI · Demo (No API)
+  </footer>
+
+  <script>
+    const SOURCE_LINE = '출처: AD-Guard AI (https://no11519-hue.github.io/ad-guard-ai/)';
+    document.getElementById('sourceLine').textContent = SOURCE_LINE;
+
     const RULES = [
       {
-        name: "확정/보장",
+        name: '확정/보장',
         regex: /(100%|무조건|보장|확실|완벽|전부|절대)/g,
-        reason: "확정·보장 표현은 과장/오해로 해석될 수 있어요.",
-        replace: "개인차가 있을 수 있으며 도움을 줄 수 있습니다."
+        reason: '확정·보장 표현은 과장/오해로 해석될 수 있어요.',
+        replace: '개인차가 있을 수 있으며 도움을 줄 수 있습니다.'
       },
       {
-        name: "단기간 과장",
-        regex: /(하루|1일|2일|3일|단\s*\d+일|즉시|바로|순식간)/g,
-        reason: "너무 빠른 결과를 단정하면 과장으로 보일 수 있어요.",
-        replace: "사용 환경에 따라 체감 시점은 달라질 수 있습니다."
+        name: '단기간 과장',
+        regex: /(하루|1일|2일|3일|단\\s*\\d+일|즉시|바로|순식간)/g,
+        reason: '너무 빠른 결과를 단정하면 과장으로 보일 수 있어요.',
+        replace: '사용 환경에 따라 체감 시점은 달라질 수 있습니다.'
       },
       {
-        name: "부작용 0",
-        regex: /(부작용\s*0%|부작용\s*없음|안전\s*보장)/g,
-        reason: "부작용 ‘없음/0%’ 단정은 위험해요.",
-        replace: "사용자에 따라 반응이 다를 수 있습니다."
+        name: '부작용 0',
+        regex: /(부작용\\s*0%|부작용\\s*없음|안전\\s*보장)/g,
+        reason: '부작용 ‘없음/0%’ 단정은 위험해요.',
+        replace: '사용자에 따라 반응이 다를 수 있습니다.'
       },
       {
-        name: "의학/치료 단정",
-        regex: /(완치|치료|통증\s*해결|병\s*낫|약\s*대신)/g,
-        reason: "의학적 효능을 확정적으로 말하면 민감해요.",
-        replace: "일상 케어에 도움을 줄 수 있습니다(개인차)."
+        name: '의학/치료 단정',
+        regex: /(완치|치료|통증\\s*해결|병\\s*낫|약\\s*대신)/g,
+        reason: '의학적 효능을 확정적으로 말하면 민감해요.',
+        replace: '일상 케어에 도움을 줄 수 있습니다(개인차).'
       },
       {
-        name: "권위 과장",
-        regex: /(의사\s*인정|전문의\s*추천|임상\s*검증|논문\s*입증|기적)/g,
-        reason: "근거가 불명확하면 과장으로 오해될 수 있어요.",
-        replace: "사용 후기/체감 사례를 바탕으로 안내드립니다(개인차)."
-      },
+        name: '권위 과장',
+        regex: /(의사\\s*인정|전문의\\s*추천|임상\\s*검증|논문\\s*입증|기적)/g,
+        reason: '근거가 불명확하면 과장으로 오해될 수 있어요.',
+        replace: '사용 후기/체감 사례를 바탕으로 안내드립니다(개인차).'
+      }
     ];
+
+    function riskLevel(text) {
+      let count = 0;
+      for (const r of RULES) {
+        if (r.regex.test(text)) count += 1;
+        r.regex.lastIndex = 0;
+      }
+      if (count >= 3) return '위험';
+      if (count >= 1) return '주의';
+      return '안전';
+    }
+
+    function textReplaceOne(text, regex, replacement) {
+      regex.lastIndex = 0;
+      return text.replace(regex, replacement);
+    }
 
     function pickRisks(text) {
       const hits = [];
@@ -66,50 +130,33 @@
           hits.push({
             phrase: m[0],
             reason: r.reason,
-            replace: textReplaceOne(text, r.regex, r.replace),
+            replace: textReplaceOne(text, r.regex, r.replace)
           });
         }
       }
-      // 부족하면 일반 케이스로 채우기
       while (hits.length < 3) {
         hits.push({
-          phrase: "과장/단정 표현 가능",
-          reason: "표현이 강하면 신고/반려 리스크가 커질 수 있어요.",
-          replace: "개인차가 있을 수 있으며 도움을 줄 수 있습니다."
+          phrase: '과장/단정 표현 가능',
+          reason: '표현이 강하면 신고/반려 리스크가 커질 수 있어요.',
+          replace: '개인차가 있을 수 있으며 도움을 줄 수 있습니다.'
         });
       }
       return hits.slice(0, 3);
     }
 
-    function textReplaceOne(text, regex, replacement) {
-      return text.replace(regex, replacement);
-    }
-
-    function riskLevel(text) {
-      let count = 0;
-      for (const r of RULES) {
-        const m = text.match(r.regex);
-        if (m && m.length) count += 1;
-      }
-      if (count >= 3) return "위험";
-      if (count >= 1) return "주의";
-      return "안전";
-    }
-
     function makeLabel() {
       return {
-        short: "AI광고 포함",
-        long: "본 광고의 일부 문구/이미지는 AI를 활용해 제작되었습니다."
+        short: 'AI광고 포함',
+        long: '본 광고의 일부 문구/이미지는 AI를 활용해 제작되었습니다.'
       };
     }
 
     function platformCopy(baseText) {
-      // 너무 길면 잘라서 느낌만 살리기
-      const short = baseText.replace(/\s+/g, " ").slice(0, 60);
+      const short = baseText.replace(/\\s+/g, ' ').slice(0, 60);
       return {
-        insta: `${short}… (개인차 있음)`,
-        blog: `아래 내용은 제품/서비스 안내이며, 개인차가 있을 수 있습니다.\n핵심 포인트: ${short}`,
-        kakao: `간단 안내드려요 🙂\n${short}\n(개인차가 있을 수 있어요!)`
+        insta: short + '… (개인차 있음)',
+        blog: '아래 내용은 제품/서비스 안내이며, 개인차가 있을 수 있습니다.\\n핵심 포인트: ' + short,
+        kakao: '간단 안내드려요 🙂\\n' + short + '\\n(개인차가 있을 수 있어요!)'
       };
     }
 
@@ -118,15 +165,118 @@
       const label = makeLabel();
       const risks = pickRisks(input);
 
-      // 플랫폼 문구는 “완화된 문장” 기반으로 생성
       let softened = input;
-      for (const r of RULES) softened = softened.replace(r.regex, r.replace);
+      for (const r of RULES) {
+        softened = softened.replace(r.regex, r.replace);
+        r.regex.lastIndex = 0;
+      }
       const pf = platformCopy(softened);
 
-     const checklist = [
-  '‘100%/무조건/보장’ 같은 단정 표현 제거했나요?',
-  '단기간 결과(하루/3일/즉시)를 확정하지 않았나요?',
-  '의학/치료/완치처럼 민감한 효능 단정이 없나요?',
-  '개인차/사용환경 차이를 자연스럽게 넣었나요?',
-  '플랫폼에 맞게 길이/톤을 맞췄나요?'
-];
+      const checklist = [
+        '‘100%/무조건/보장’ 같은 단정 표현 제거했나요?',
+        '단기간 결과(하루/3일/즉시)를 확정하지 않았나요?',
+        '의학/치료/완치처럼 민감한 효능 단정이 없나요?',
+        '개인차/사용환경 차이를 자연스럽게 넣었나요?',
+        '플랫폼에 맞게 길이/톤을 맞췄나요?'
+      ];
+
+      return (
+`# 1) 결과 요약
+- 위험도: ${lvl}
+- 한 줄 코멘트: 강한 표현을 ‘개인차/도움’ 중심으로 완화하면 안전도가 올라갑니다.
+
+# 2) AI 광고 표기(라벨) 문구 2종
+- 짧은 버전(15자 내외): ${label.short}
+- 긴 버전(1~2문장): ${label.long}
+
+# 3) 위험 표현 3개 & 대체 문장
+1) 문제 문구: ${risks[0].phrase}
+   왜 위험(1줄): ${risks[0].reason}
+   대체 문장(1줄): ${risks[0].replace}
+2) 문제 문구: ${risks[1].phrase}
+   왜 위험(1줄): ${risks[1].reason}
+   대체 문장(1줄): ${risks[1].replace}
+3) 문제 문구: ${risks[2].phrase}
+   왜 위험(1줄): ${risks[2].reason}
+   대체 문장(1줄): ${risks[2].replace}
+
+# 4) 플랫폼용 문구 변환(3종)
+- 인스타/쇼츠용(짧게): ${pf.insta}
+- 네이버/블로그용(설명형): ${pf.blog}
+- 카톡/문자용(친근): ${pf.kakao}
+
+# 5) 바로 적용 체크리스트(5개)
+- [ ] ${checklist[0]}
+- [ ] ${checklist[1]}
+- [ ] ${checklist[2]}
+- [ ] ${checklist[3]}
+- [ ] ${checklist[4]}
+
+본 결과는 법률 자문이 아닌 일반적인 안전 가이드입니다.`
+      );
+    }
+
+    const inputEl = document.getElementById('input');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const outputCard = document.getElementById('outputCard');
+    const outputEl = document.getElementById('output');
+    const copyBtn = document.getElementById('copyBtn');
+
+    document.getElementById('ex1').onclick = () => {
+      inputEl.value = '이 제품만 먹으면 3일 안에 -5kg 무조건 감량! 부작용 0% 100% 보장. 오늘만 반값!';
+    };
+    document.getElementById('ex2').onclick = () => {
+      inputEl.value = '의사가 인정한 기적의 앰플! 1주일 만에 주름이 사라집니다. 임상으로 검증된 확실한 효과!';
+    };
+    document.getElementById('ex3').onclick = () => {
+      inputEl.value = 'AI가 광고 문구를 점검하고 표기 문구까지 만들어드립니다. 초보 사장님도 10초면 광고 문구를 더 안전하게 수정 가능!';
+    };
+
+    let isLoading = false;
+
+    analyzeBtn.onclick = () => {
+      const text = (inputEl.value || '').trim();
+      if (!text) {
+        alert('광고 문구를 먼저 붙여넣어 주세요!');
+        return;
+      }
+      if (isLoading) return;
+
+      isLoading = true;
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = '분석 중...';
+      outputCard.classList.add('hidden');
+      outputEl.textContent = '';
+
+      setTimeout(() => {
+        const result = buildOutput(text);
+        outputEl.textContent = result;
+        outputCard.classList.remove('hidden');
+
+        isLoading = false;
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = '검사';
+      }, 300);
+    };
+
+    copyBtn.onclick = async () => {
+      const text = (outputEl.textContent || '').trim();
+      if (!text) return;
+      const finalText = text + '\\n\\n' + SOURCE_LINE;
+
+      try {
+        await navigator.clipboard.writeText(finalText);
+        alert('복사 완료!');
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = finalText;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert('복사 완료!');
+      }
+    };
+  </script>
+</body>
+</html>
