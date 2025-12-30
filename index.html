@@ -1,258 +1,43 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD-Guard AI: 광고 규제 준수 전문가</title>
-    <!-- CDN Libraries -->
+    <title>광고 문구 안전 점검</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100;400;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
     <style>
-        body { font-family: 'Pretendard', sans-serif; }
-        .animate-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .premium-bg { background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%); }
+        /* Optional: Custom scrollbar styles for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* Tailwind gray-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* Tailwind gray-400 */
+        }
     </style>
 <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "vite": "https://esm.sh/vite@^7.3.0",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
   }
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body>
     <div id="root"></div>
-
-    <script type="text/babel" data-type="module">
-        import { GoogleGenAI, Type } from 'https://esm.sh/@google/genai';
-
-        // --- Types & Constants ---
-        const AppStatus = {
-            IDLE: 'IDLE',
-            LOADING: 'LOADING',
-            SUCCESS: 'SUCCESS',
-            ERROR: 'ERROR'
-        };
-
-        const SYSTEM_INSTRUCTION = `당신은 대한민국 광고법 및 2026년 시행 예정인 'AI 생성 콘텐츠 표기 의무 지침'에 특화된 [광고 규제 준수 전문가]입니다.
-사용자가 광고 문구를 입력하면, 법적 의무 표기 사항을 생성하고 위험 요소를 분석하여 대안을 제시합니다.
-
-## 분석 로직
-1. 한국 방송통신위원회 및 공정거래위원회의 최신 가이드라인을 준수할 것.
-2. '최고', '전 세계 1위', '즉시 완치', '부작용 없음' 등 검증 불가능한 절대적 표현은 무조건 위험 표현으로 분류할 것.
-3. AI 생성물임을 명시할 때 UX를 고려하여 자연스러운 문구를 생성할 것.
-
-## 출력 필수 항목
-- AI 표기 라벨 (Label)
-- 위험 요소 분석 TOP 3 (Risks)
-- 10초 세이프티 대체안 (Safety Alternative)
-- 사용자가 "/premium" 키워드를 입력하거나 요청한 경우에만 프리미엄 플랫폼별(인스타그램, 네이버 블로그, 유튜브, 랜딩 페이지 CTA) 추가 문구 생성.
-
-응답은 반드시 지정된 JSON 형식을 따르세요.`;
-
-        // --- Components ---
-
-        const SettingsModal = ({ isOpen, onClose }) => {
-            if (!isOpen) return null;
-            const handleOpenKeySelector = async () => {
-                if (window.aistudio?.openSelectKey) {
-                    await window.aistudio.openSelectKey();
-                    onClose();
-                } else {
-                    alert("이 환경에서는 자동 키 선택 기능을 사용할 수 없습니다.");
-                }
-            };
-
-            return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in">
-                        <div className="bg-blue-600 p-6 text-white flex justify-between items-center">
-                            <h3 className="text-xl font-bold flex items-center"><i className="fa-solid fa-gear mr-2"></i>서비스 설정</h3>
-                            <button onClick={onClose}><i className="fa-solid fa-xmark text-2xl"></i></button>
-                        </div>
-                        <div className="p-8 space-y-6">
-                            <section>
-                                <h4 className="text-slate-900 font-bold mb-2 flex items-center"><i className="fa-solid fa-key text-blue-500 mr-2"></i>Gemini API 키</h4>
-                                <p className="text-sm text-slate-500 mb-4">서비스 이용을 위해 본인의 API 키 등록이 필요합니다.</p>
-                                <button onClick={handleOpenKeySelector} className="w-full py-4 bg-blue-50 hover:bg-blue-100 border-2 border-dashed border-blue-300 rounded-2xl text-blue-700 font-bold transition-all">
-                                    API 키 설정/변경하기
-                                </button>
-                            </section>
-                            <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-500 space-y-2">
-                                <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-blue-600 font-bold underline block">무료 API 키 발급받기</a>
-                                <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="text-indigo-600 font-bold underline block">결제 및 프로젝트 설정 가이드</a>
-                            </div>
-                        </div>
-                        <div className="px-8 pb-8"><button onClick={onClose} className="w-full py-3 bg-slate-900 text-white rounded-xl font-bold">닫기</button></div>
-                    </div>
-                </div>
-            );
-        };
-
-        const AnalysisInput = ({ onAnalyze, isLoading }) => {
-            const [text, setText] = React.useState('');
-            return (
-                <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 animate-in">
-                    <form onSubmit={(e) => { e.preventDefault(); onAnalyze(text); }} className="space-y-4">
-                        <div className="flex justify-between items-center">
-                            <label className="text-sm font-bold text-slate-700 flex items-center"><i className="fa-solid fa-pen-nib mr-2 text-blue-600"></i>광고 문구 입력</label>
-                            <span className="text-xs text-slate-400">팁: <code className="bg-slate-100 px-1 rounded text-blue-600">/premium</code> 포함 시 확장 분석</span>
-                        </div>
-                        <textarea
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                            placeholder="예: 전 세계 1위 관절 영양제, 즉시 통증 완화!"
-                            className="w-full h-40 p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
-                            disabled={isLoading}
-                        />
-                        <button type="submit" disabled={!text.trim() || isLoading} className={`w-full py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center space-x-2 ${isLoading ? 'bg-slate-400' : 'bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-lg active:scale-95'}`}>
-                            {isLoading ? <span>규제 분석 중...</span> : <><i className="fa-solid fa-shield-halved"></i><span>컴플라이언스 검사 및 AI 라벨 생성</span></>}
-                        </button>
-                    </form>
-                </div>
-            );
-        };
-
-        const ResultsView = ({ result }) => {
-            const [copied, setCopied] = React.useState(false);
-            const handleCopy = () => {
-                const text = `[🏷️ AI 표기]\n${result.label}\n\n[⚠️ 위험 요소]\n${result.risks.map((r, i) => `${i+1}. ${r.word}: ${r.reason}`).join('\n')}\n\n[✨ 대체안]\n${result.safetyAlternative}`;
-                navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
-            };
-
-            return (
-                <div className="space-y-6 animate-in">
-                    <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-bold">분석 결과 리포트</h3>
-                        <button onClick={handleCopy} className={`px-4 py-2 rounded-lg text-sm font-bold text-white transition-all ${copied ? 'bg-emerald-500' : 'bg-blue-600'}`}>
-                            {copied ? '복사됨!' : '전체 복사'}
-                        </button>
-                    </div>
-                    <section className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
-                        <h3 className="text-blue-900 font-bold mb-2 flex items-center"><i className="fa-solid fa-tag mr-2"></i>🏷️ AI 광고 필수 표기</h3>
-                        <div className="bg-white p-4 rounded-xl border border-blue-200 font-medium">{result.label}</div>
-                    </section>
-                    <section className="bg-white border border-slate-200 rounded-2xl p-6">
-                        <h3 className="text-slate-900 font-bold mb-4 flex items-center"><i className="fa-solid fa-triangle-exclamation text-amber-500 mr-2"></i>⚠️ 위험 요소 분석</h3>
-                        <div className="space-y-3">
-                            {result.risks.map((risk, i) => (
-                                <div key={i} className="p-3 bg-slate-50 rounded-lg border border-slate-100 flex items-start">
-                                    <span className="w-6 h-6 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5">{i+1}</span>
-                                    <div><span className="font-bold text-red-600 block">{risk.word}</span><p className="text-sm text-slate-600">{risk.reason}</p></div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                    <section className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6">
-                        <h3 className="text-emerald-900 font-bold mb-2 flex items-center"><i className="fa-solid fa-wand-magic-sparkles mr-2"></i>✨ 세이프티 대체안</h3>
-                        <div className="bg-white p-5 rounded-xl border border-emerald-200 font-medium">{result.safetyAlternative}</div>
-                    </section>
-                </div>
-            );
-        };
-
-        const PremiumResults = ({ premium }) => (
-            <div className="mt-10 pt-10 border-t-2 border-dashed border-indigo-200 animate-in">
-                <div className="flex items-center space-x-2 mb-6"><span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold">PREMIUM</span><h2 className="text-xl font-bold">플랫폼별 확장 콘텐츠</h2></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-2xl border p-6"><h4 className="font-bold mb-2 flex items-center"><i className="fa-brands fa-instagram text-pink-600 mr-2"></i>인스타그램</h4><p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg">{premium.instagram}</p></div>
-                    <div className="bg-white rounded-2xl border p-6"><h4 className="font-bold mb-2 flex items-center"><i className="fa-brands fa-youtube text-red-600 mr-2"></i>유튜브 자막</h4><p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg">{premium.youtube}</p></div>
-                    <div className="bg-white rounded-2xl border p-6 md:col-span-2"><h4 className="font-bold mb-2 flex items-center"><i className="fa-solid fa-newspaper text-emerald-600 mr-2"></i>네이버 블로그</h4><p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg whitespace-pre-wrap">{premium.naverBlog}</p></div>
-                    <div className="bg-indigo-50 rounded-2xl border border-indigo-100 p-6 md:col-span-2"><h4 className="font-bold mb-3">랜딩 페이지 CTA</h4><div className="flex flex-wrap gap-2">{premium.landingPage.map((cta, i) => <button key={i} className="bg-white px-4 py-2 rounded-full text-indigo-700 font-bold shadow-sm">{cta}</button>)}</div></div>
-                </div>
-            </div>
-        );
-
-        // --- Main App ---
-
-        const App = () => {
-            const [status, setStatus] = React.useState(AppStatus.IDLE);
-            const [result, setResult] = React.useState(null);
-            const [error, setError] = React.useState(null);
-            const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
-
-            const handleAnalyze = async (copy) => {
-                const apiKey = process.env.API_KEY || (window.aistudio?.hasSelectedApiKey && await window.aistudio.hasSelectedApiKey());
-                if (!apiKey) { setError("API 키를 먼저 등록해주세요."); setIsSettingsOpen(true); return; }
-                
-                setStatus(AppStatus.LOADING);
-                setError(null);
-                const isPremium = copy.includes('/premium');
-
-                try {
-                    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-                    const response = await ai.models.generateContent({
-                        model: 'gemini-3-pro-preview',
-                        contents: `분석할 광고 문구: "${copy}" ${isPremium ? '(프리미엄 모드)' : ''}`,
-                        config: {
-                            systemInstruction: SYSTEM_INSTRUCTION,
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    label: { type: Type.STRING },
-                                    risks: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { word: { type: Type.STRING }, reason: { type: Type.STRING } }, required: ["word", "reason"] } },
-                                    safetyAlternative: { type: Type.STRING },
-                                    premium: { type: Type.OBJECT, properties: { instagram: { type: Type.STRING }, naverBlog: { type: Type.STRING }, youtube: { type: Type.STRING }, landingPage: { type: Type.ARRAY, items: { type: Type.STRING } } } }
-                                },
-                                required: ["label", "risks", "safetyAlternative"]
-                            }
-                        }
-                    });
-                    setResult(JSON.parse(response.text));
-                    setStatus(AppStatus.SUCCESS);
-                } catch (err) {
-                    console.error(err);
-                    setError("분석 중 오류가 발생했습니다. API 키와 네트워크를 확인해주세요.");
-                    setStatus(AppStatus.ERROR);
-                }
-            };
-
-            return (
-                <div className="min-h-screen pb-20">
-                    <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-                    <header className="bg-white/80 border-b border-slate-200 sticky top-0 z-50 backdrop-blur-md">
-                        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><i className="fa-solid fa-shield-check text-white"></i></div>
-                                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-800">AD-Guard AI</h1>
-                            </div>
-                            <button onClick={() => setIsSettingsOpen(true)} className="w-10 h-10 rounded-full hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors"><i className="fa-solid fa-gear text-lg"></i></button>
-                        </div>
-                    </header>
-                    <main className="max-w-4xl mx-auto px-4 pt-12">
-                        <div className="text-center mb-12">
-                            <h2 className="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">대한민국 광고 규제 준수, <span className="text-blue-600">AI로 한 번에</span></h2>
-                            <p className="text-slate-600 text-lg max-w-2xl mx-auto">과대광고 진단 및 2026년 AI 생성 표기 지침을 준수하는 솔루션</p>
-                        </div>
-                        <AnalysisInput onAnalyze={handleAnalyze} isLoading={status === AppStatus.LOADING} />
-                        {error && <div className="mt-8 bg-red-50 border border-red-200 rounded-xl p-6 text-red-700 text-sm animate-in"><i className="fa-solid fa-circle-exclamation mr-2"></i>{error}</div>}
-                        <div className="mt-12">
-                            {status === AppStatus.SUCCESS && result && (
-                                <><ResultsView result={result} />{result.premium && <PremiumResults premium={result.premium} />}</>
-                            )}
-                            {status === AppStatus.IDLE && (
-                                <div className="bg-slate-100/50 border-2 border-dashed border-slate-200 rounded-3xl p-16 text-center text-slate-400">분석 결과가 여기에 표시됩니다.</div>
-                            )}
-                        </div>
-                    </main>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>
