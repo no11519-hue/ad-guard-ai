@@ -44,3 +44,810 @@
       margin:0;
       font-family: var(--font);
       color: var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(37,99,235,.16), transparent 60%),
+        radial-gradient(900px 500px at 85% 10%, rgba(14,165,233,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:1080px; margin:0 auto; padding:22px 14px 36px;}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      box-shadow: var(--shadow2);
+      position: sticky;
+      top: 10px;
+      z-index: 10;
+    }
+    .brand{display:flex; align-items:center; gap:10px;}
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(37,99,235,.95), rgba(14,165,233,.95));
+      box-shadow: 0 10px 25px rgba(37,99,235,.25);
+      display:grid; place-items:center;
+      color:#fff; font-weight:900; letter-spacing:.3px;
+      font-size: 14px;
+    }
+    .brandTxt{display:flex; flex-direction:column; gap:2px;}
+    .brandTxt .t{font-weight:900; font-size:14px;}
+    .brandTxt .s{font-size:12px; color:var(--muted2)}
+    .topActions{display:flex; align-items:center; gap:8px;}
+    .pill{
+      font-size:12px; color: var(--blueDark);
+      background: rgba(37,99,235,.10);
+      border:1px solid rgba(37,99,235,.22);
+      padding:6px 10px; border-radius:999px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .btn{
+      border:1px solid rgba(37,99,235,.30);
+      background: linear-gradient(135deg, rgba(37,99,235,.95), rgba(14,165,233,.85));
+      color:#fff;
+      padding:10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight:800;
+      box-shadow: 0 12px 28px rgba(37,99,235,.18);
+      transition: transform .08s ease, filter .2s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-1px); filter: brightness(1.03);}
+    .btn:active{transform: translateY(0px)}
+    .btn.ghost{
+      background: rgba(255,255,255,.55);
+      color: var(--blueDark);
+      border:1px solid rgba(37,99,235,.28);
+      box-shadow:none;
+    }
+
+    .section{margin-top: 18px;}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .topbar{position:relative; top:auto}
+    }
+
+    .card{
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      border-radius: var(--r18);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardInner{padding:16px}
+    .cardHeader{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.7);
+    }
+    .h1{
+      font-size: 22px;
+      letter-spacing: -.3px;
+      line-height: 1.25;
+      margin: 2px 0 10px;
+      font-weight: 900;
+    }
+    .sub{
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13.5px;
+      margin:0;
+    }
+
+    .bullets{margin: 14px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px;}
+    .bullets li{
+      display:flex; gap:10px; align-items:flex-start;
+      font-size:13.5px; color: var(--muted);
+      line-height:1.4;
+    }
+    .dot{
+      width:18px; height:18px; border-radius:6px;
+      background: rgba(22,163,74,.12);
+      border: 1px solid rgba(22,163,74,.25);
+      color: var(--good);
+      display:grid; place-items:center;
+      font-weight:900;
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+
+    .ctaRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+    .helpRow{
+      margin-top: 10px;
+      display:flex; gap:10px; flex-wrap:wrap;
+      color: var(--muted2);
+      font-size: 12.5px;
+      align-items:center;
+    }
+    .link{
+      color: var(--blueDark);
+      font-weight: 800;
+      cursor:pointer;
+    }
+
+    .trustRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      margin-top: 14px;
+    }
+    @media (max-width: 600px){
+      .trustRow{grid-template-columns:1fr}
+    }
+    .trust{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      border-radius: var(--r14);
+      padding: 12px;
+    }
+    .trust b{display:block; font-size: 12.5px;}
+    .trust span{display:block; margin-top: 6px; color: var(--muted2); font-size: 12.5px; line-height: 1.4;}
+
+    /* Preview */
+    .previewTop{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom: 10px;
+    }
+    .badge{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(37,99,235,.25);
+      background: rgba(37,99,235,.09);
+      color: var(--blueDark);
+      font-weight: 800;
+      white-space:nowrap;
+    }
+    .scoreBox{
+      display:flex; align-items:baseline; gap:6px;
+      background: rgba(14,165,233,.10);
+      border: 1px solid rgba(14,165,233,.25);
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+    .scoreBox .n{font-size: 22px; font-weight: 900; color: #0b3a8f;}
+    .scoreBox .t{font-size: 12px; color: var(--muted2); font-weight: 800;}
+
+    .mini{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      border-radius: var(--r14);
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .mini h3{
+      margin:0 0 8px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .mini p{
+      margin:0;
+      font-size: 12.8px;
+      color: var(--muted);
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .tags{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+    .tag{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.7);
+      color: var(--muted);
+      font-weight: 750;
+    }
+    .tag.bad{border-color: rgba(239,68,68,.22); background: rgba(239,68,68,.08); color: #b91c1c;}
+    .tag.warn{border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.10); color: #8a4b00;}
+    .tag.good{border-color: rgba(22,163,74,.22); background: rgba(22,163,74,.10); color: #0f7a35;}
+
+    /* Form */
+    .formGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 780px){
+      .formGrid{grid-template-columns:1fr}
+    }
+    .field{display:flex; flex-direction:column; gap:6px;}
+    label{font-size: 12px; color: var(--muted2); font-weight: 800;}
+    select, textarea, input[type="text"]{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.85);
+      border-radius: 14px;
+      padding: 12px 12px;
+      outline:none;
+      font-size: 13.5px;
+      color: var(--text);
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+    textarea{min-height: 120px; resize: vertical; line-height: 1.45;}
+    select:focus, textarea:focus, input[type="text"]:focus{
+      border-color: rgba(37,99,235,.45);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+    }
+    .formActions{display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px;}
+    .btnWide{
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .btnWide.ghost{
+      border-radius: 14px;
+    }
+    .smallBtn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.75);
+      color: var(--muted);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor:pointer;
+      font-weight: 850;
+    }
+
+    details{
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      border-radius: var(--r14);
+      padding: 10px 12px;
+    }
+    summary{
+      cursor:pointer;
+      font-weight: 900;
+      color: var(--blueDark);
+      outline:none;
+    }
+    .adv{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 780px){
+      .adv{grid-template-columns:1fr}
+    }
+
+    /* Result */
+    .resultHeader{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .riskLine{
+      margin-top: 10px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      color: var(--muted2);
+      font-size: 12.5px;
+    }
+    .hl{
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(239,68,68,.28);
+      background: rgba(239,68,68,.10);
+      color:#b91c1c;
+      font-weight: 900;
+    }
+
+    /* Pricing */
+    .pricingGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 980px){
+      .pricingGrid{grid-template-columns:1fr}
+    }
+    .priceCard{border:1px solid var(--line); background: rgba(255,255,255,.78); border-radius: var(--r18); box-shadow: var(--shadow2); overflow:hidden;}
+    .priceTop{padding: 14px 14px 10px; border-bottom:1px solid var(--line); background: rgba(255,255,255,.65);}
+    .priceName{font-weight: 900; font-size: 14px;}
+    .priceVal{margin-top: 6px; font-weight: 900; font-size: 22px; color:#0b3a8f;}
+    .priceBody{padding: 12px 14px 14px;}
+    .ul{margin:0; padding-left: 18px; color: var(--muted); font-size: 13.2px; line-height:1.5;}
+    .ul li{margin:6px 0}
+    .priceBtn{margin-top: 12px; width:100%; justify-content:center}
+
+    /* FAQ */
+    .faqItem{border-top:1px solid var(--line); padding: 12px 16px;}
+    .faqQ{font-weight: 900; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .faqA{color: var(--muted); font-size: 13px; line-height:1.55; margin-top: 8px; display:none;}
+    .faqItem.open .faqA{display:block;}
+    .chev{color: var(--muted2); font-weight: 900;}
+
+    /* Footer */
+    .footer{
+      margin-top: 18px;
+      color: var(--muted2);
+      font-size: 12.5px;
+      line-height: 1.55;
+      text-align:center;
+    }
+    .footer b{color: var(--text);}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">AD</div>
+        <div class="brandTxt">
+          <div class="t">AD-Guard AI</div>
+          <div class="s">문구 1줄로 위험표현 점검 + 대체문구 생성</div>
+        </div>
+      </div>
+
+      <div class="topActions">
+        <div class="pill">⏱️ 15초 광고문구 점검</div>
+        <button class="btn ghost" onclick="scrollToId('pricing')">요금제</button>
+        <button class="btn" onclick="alert('문의 기능은 연결만 하면 됩니다. (카톡 채널/구글폼 링크 등)')">문의하기</button>
+      </div>
+    </div>
+
+    <!-- Hero + Preview -->
+    <div class="section grid">
+      <div class="card">
+        <div class="cardInner">
+          <div class="badge">광고문구 1줄 붙여넣기</div>
+          <div class="h1">광고 문구 하나로<br/>광고 고지 문구(필수표기) + 위험표현 교정 + 채널별 문구까지</div>
+          <p class="sub">
+            인스타/블로그/카톡/전단에 올리기 전에, “반려/오해/과장” 위험 표현을 먼저 잡고
+            바로 써먹는 대체 문구로 바꿔드립니다.
+          </p>
+
+          <ul class="bullets">
+            <li><span class="dot">✓</span> <b>위험 단어/표현</b> 자동 하이라이트 (예: 100%, 무조건, 최고)</li>
+            <li><span class="dot">✓</span> <b>대체 문구</b> 5개 생성 (톤 선택 가능)</li>
+            <li><span class="dot">✓</span> <b>채널별 길이</b>로 자동 변환 + 필요 시 <b>광고 고지 문구</b> 추천</li>
+          </ul>
+
+          <div class="ctaRow">
+            <button class="btn btnWide" onclick="scrollToId('checker')">무료로 한번 점검하기</button>
+            <button class="btn ghost btnWide" onclick="scrollToId('pricing')">PRO로 자세히 보기</button>
+          </div>
+
+          <div class="helpRow">
+            <span>※ 기본은 “저장 안 함” (브라우저에서만 처리)</span>
+            <span class="link" onclick="scrollToId('faq')">FAQ 보기</span>
+          </div>
+
+          <div class="trustRow">
+            <div class="trust">
+              <b>저장/학습 불안 제거</b>
+              <span>기본 설정: 입력 문구 저장하지 않습니다.</span>
+            </div>
+            <div class="trust">
+              <b>점수 기준 공개</b>
+              <span>과장/단정·오해 유발·증빙 필요 표현을 합산합니다.</span>
+            </div>
+            <div class="trust">
+              <b>책임범위 안내</b>
+              <span>법률/심의 “보장”이 아닌 리스크 감소용 도구입니다.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Card -->
+      <div class="card">
+        <div class="cardHeader">
+          <b>미리보기</b> <span style="color:var(--muted2); font-size:12px;">(예시 결과)</span>
+        </div>
+        <div class="cardInner">
+          <div class="previewTop">
+            <div class="badge">샘플 분석</div>
+            <div class="scoreBox">
+              <div class="n" id="sampleScore">84</div>
+              <div class="t">/ 100</div>
+            </div>
+          </div>
+
+          <div class="mini">
+            <h3>문제 표현(예시)</h3>
+            <div class="tags">
+              <span class="tag bad">“100%”</span>
+              <span class="tag warn">“최고”</span>
+              <span class="tag warn">“무조건”</span>
+            </div>
+          </div>
+
+          <div class="mini">
+            <h3>대체 문구(예시)</h3>
+            <p>✅ “상황에 맞게 선택할 수 있는 옵션을 준비했어요. 지금 문의주시면 안내드릴게요.”</p>
+          </div>
+
+          <div class="mini">
+            <h3>광고 고지 문구(예시)</h3>
+            <p>※ (필요 시) “광고/협찬/프로모션 포함” 등 채널에 맞는 표기를 안내합니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checker -->
+    <div class="section card" id="checker">
+      <div class="cardHeader">
+        <b>지금 바로 점검해보세요</b>
+        <span style="color:var(--muted2); font-size:12px;">업종/채널/목적을 고르면 더 정확해집니다</span>
+      </div>
+
+      <div class="cardInner">
+        <div class="formGrid">
+          <div class="field">
+            <label>업종</label>
+            <select id="industry">
+              <option value="미선택">선택</option>
+              <option>카페</option>
+              <option>미용실</option>
+              <option>헬스/PT</option>
+              <option>학원/과외</option>
+              <option>병원/클리닉</option>
+              <option>쇼핑몰</option>
+              <option>기타</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>채널</label>
+            <select id="channel">
+              <option>인스타</option>
+              <option>블로그</option>
+              <option>카톡/DM</option>
+              <option>네이버플레이스</option>
+              <option>전단/배너</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>목적</label>
+            <select id="goal">
+              <option>예약</option>
+              <option>문의</option>
+              <option>구매</option>
+              <option>재방문</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:10px;">
+          <label>광고 문구 (붙여넣기)</label>
+          <textarea id="copyInput" placeholder="예) 우리 샵은 100% 만족 보장! 지금 예약하면 50% 할인!"></textarea>
+        </div>
+
+        <details>
+          <summary>고급 설정(선택)</summary>
+          <div class="adv">
+            <div class="field">
+              <label>톤(말투)</label>
+              <select id="tone">
+                <option value="친근">친근</option>
+                <option value="프리미엄">프리미엄</option>
+                <option value="단호">단호</option>
+                <option value="담백">담백</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>광고 고지 문구 포함</label>
+              <select id="labelMode">
+                <option value="auto">자동 추천</option>
+                <option value="on">항상 포함</option>
+                <option value="off">포함 안 함</option>
+              </select>
+            </div>
+          </div>
+        </details>
+
+        <div class="formActions">
+          <button class="btn btnWide" onclick="runCheck()">위험표현 체크 + 대체문구 만들기</button>
+          <button class="btn ghost btnWide" onclick="alert('PDF 저장 기능은 버튼 연결만 하면 됩니다. (예: 결제 후 다운로드 링크)')">결과 저장/PDF 받기</button>
+          <button class="smallBtn" onclick="clearAll()">지우기</button>
+        </div>
+
+        <!-- Result -->
+        <div class="section card" style="margin-top:14px;">
+          <div class="cardHeader resultHeader">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <b>결과</b>
+              <span class="badge" id="resultBadge">대기 중</span>
+            </div>
+            <div class="scoreBox">
+              <div class="n" id="score">-</div>
+              <div class="t">/ 100</div>
+            </div>
+          </div>
+
+          <div class="cardInner">
+            <div class="riskLine">
+              <span>하이라이트:</span>
+              <span class="hl" id="hl1">없음</span>
+              <span class="hl" id="hl2" style="display:none;"></span>
+              <span class="hl" id="hl3" style="display:none;"></span>
+            </div>
+
+            <div class="mini">
+              <h3>원문 (하이라이트 적용)</h3>
+              <p id="rendered">아직 점검 전입니다.</p>
+            </div>
+
+            <div class="mini">
+              <h3>대체 문구 5개</h3>
+              <p id="alts">점검을 실행하면 여기에 생성됩니다.</p>
+            </div>
+
+            <div class="mini">
+              <h3>광고 고지 문구(필요 시)</h3>
+              <p id="labelText">자동 추천(점검 후 안내)</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="section card" id="pricing">
+      <div class="cardHeader">
+        <b>사업화(유료) 모델</b>
+        <span style="color:var(--muted2); font-size:12px;">무료→스몰 결제→정기/고급으로 확장</span>
+      </div>
+
+      <div class="cardInner">
+        <div class="pricingGrid">
+          <div class="priceCard">
+            <div class="priceTop">
+              <div class="priceName">Free</div>
+              <div class="priceVal">₩0</div>
+            </div>
+            <div class="priceBody">
+              <ul class="ul">
+                <li>기본 위험표현 하이라이트</li>
+                <li>대체 문구 5개 생성</li>
+                <li>하루 3회 제한(예시)</li>
+              </ul>
+              <button class="btn priceBtn" onclick="scrollToId('checker')">무료로 써보기</button>
+            </div>
+          </div>
+
+          <div class="priceCard" style="border-color: rgba(37,99,235,.35);">
+            <div class="priceTop">
+              <div class="priceName">Starter</div>
+              <div class="priceVal">₩9,900<span style="font-size:12px; color:var(--muted2); font-weight:800;">/월</span></div>
+            </div>
+            <div class="priceBody">
+              <ul class="ul">
+                <li>제한 해제(월 300회 등)</li>
+                <li>채널별 변환 3종</li>
+                <li>톤 저장(브랜드 말투)</li>
+              </ul>
+              <button class="btn ghost priceBtn" onclick="alert('결제 연결만 하면 됩니다(토스/카카오페이/링크결제).')">시작하기(테스트)</button>
+            </div>
+          </div>
+
+          <div class="priceCard">
+            <div class="priceTop">
+              <div class="priceName">Pro</div>
+              <div class="priceVal">₩29,000<span style="font-size:12px; color:var(--muted2); font-weight:800;">/월</span></div>
+            </div>
+            <div class="priceBody">
+              <ul class="ul">
+                <li>고급 리스크 규칙(업종별)</li>
+                <li>FAQ/상세설명 자동 생성</li>
+                <li>팀 공유/히스토리(선택)</li>
+              </ul>
+              <button class="btn priceBtn" onclick="alert('PRO 기능은 결제/로그인 붙이면 바로 확장 가능합니다.')">PRO로 업그레이드</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px; color:var(--muted2); font-size:12.5px; line-height:1.5;">
+          ※ “법률/심의 통과 100% 보장”이 아니라, <b>반려/오해 위험 표현을 줄이는 도구</b>로 안내하는 게 안전합니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section card" id="faq">
+      <div class="cardHeader">
+        <b>FAQ</b>
+        <span style="color:var(--muted2); font-size:12px;">의심 질문부터 먼저 답합니다</span>
+      </div>
+
+      <div class="faqItem" onclick="toggleFaq(this)">
+        <div class="faqQ">이거 진짜 반려를 100% 막아주나요? <span class="chev">▾</span></div>
+        <div class="faqA">아니요. 플랫폼 정책/심의는 변동될 수 있어 “보장”은 불가능합니다. 대신 과장/단정/오해 소지가 큰 표현을 줄여 반려 리스크를 낮추는 데 도움을 줍니다.</div>
+      </div>
+
+      <div class="faqItem" onclick="toggleFaq(this)">
+        <div class="faqQ">입력한 문구 저장하나요? <span class="chev">▾</span></div>
+        <div class="faqA">이 데모 파일은 브라우저에서만 처리되고 서버 저장을 하지 않습니다. (추후 “저장 기능”을 넣을 경우에도 사용자가 선택했을 때만 저장되게 설계하세요.)</div>
+      </div>
+
+      <div class="faqItem" onclick="toggleFaq(this)">
+        <div class="faqQ">인스타/블로그/카톡 다르게 써야 하나요? <span class="chev">▾</span></div>
+        <div class="faqA">네. 채널마다 글 길이/톤/CTA가 달라서 같은 문장이라도 변환하는 게 유리합니다. 이 페이지는 채널을 선택하면 그 방향으로 문구 톤을 맞춰주는 형태로 확장할 수 있습니다.</div>
+      </div>
+
+      <div class="faqItem" onclick="toggleFaq(this)">
+        <div class="faqQ">표시문구(라벨) 말이 어려워요 <span class="chev">▾</span></div>
+        <div class="faqA">그래서 “광고 고지 문구(필수표기)”로 바꿨습니다. 사용자는 “이걸 어디에 붙이지?”만 알면 되니까, 결과에서 바로 복사할 수 있게 제공하는 것이 좋습니다.</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div><b>AD-Guard AI</b> · 광고문구 리스크 점검 & 대체문구 생성</div>
+      <div>© <span id="y"></span> no11519 · GitHub Pages</div>
+    </div>
+
+  </div>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+
+    function scrollToId(id){
+      const el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+
+    function toggleFaq(el){
+      el.classList.toggle("open");
+    }
+
+    // Simple local checker (demo)
+    const RISK = [
+      {w:"100%", type:"bad", why:"과장/단정"},
+      {w:"무조건", type:"warn", why:"단정"},
+      {w:"최고", type:"warn", why:"비교 우월"},
+      {w:"1위", type:"warn", why:"비교 우월"},
+      {w:"유일", type:"warn", why:"단정"},
+      {w:"보장", type:"warn", why:"단정"},
+      {w:"완치", type:"bad", why:"의학적 효능"},
+      {w:"치료", type:"bad", why:"의학적 효능"},
+      {w:"부작용없", type:"bad", why:"절대 표현"},
+      {w:"절대", type:"warn", why:"단정"},
+      {w:"즉시", type:"warn", why:"오해 소지"},
+      {w:"확실", type:"warn", why:"단정"}
+    ];
+
+    function escapeHtml(str){
+      return (str || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function clearAll(){
+      document.getElementById("copyInput").value = "";
+      document.getElementById("score").textContent = "-";
+      document.getElementById("resultBadge").textContent = "대기 중";
+      document.getElementById("rendered").textContent = "아직 점검 전입니다.";
+      document.getElementById("alts").textContent = "점검을 실행하면 여기에 생성됩니다.";
+      document.getElementById("labelText").textContent = "자동 추천(점검 후 안내)";
+      setHL([]);
+    }
+
+    function setHL(words){
+      const hl1 = document.getElementById("hl1");
+      const hl2 = document.getElementById("hl2");
+      const hl3 = document.getElementById("hl3");
+
+      const xs = words.slice(0,3);
+      hl1.textContent = xs[0] || "없음";
+
+      if(xs[1]){
+        hl2.style.display = "inline-block";
+        hl2.textContent = xs[1];
+      }else{
+        hl2.style.display = "none";
+      }
+
+      if(xs[2]){
+        hl3.style.display = "inline-block";
+        hl3.textContent = xs[2];
+      }else{
+        hl3.style.display = "none";
+      }
+    }
+
+    function runCheck(){
+      const industry = document.getElementById("industry").value;
+      const channel = document.getElementById("channel").value;
+      const goal = document.getElementById("goal").value;
+      const tone = document.getElementById("tone").value;
+      const labelMode = document.getElementById("labelMode").value;
+      const text = document.getElementById("copyInput").value.trim();
+
+      if(!text){
+        alert("광고 문구를 입력해주세요.");
+        return;
+      }
+
+      // detect risks
+      const hits = [];
+      let score = 92; // start
+      let rendered = escapeHtml(text);
+
+      for(const r of RISK){
+        if(text.includes(r.w)){
+          hits.push(r.w);
+          score -= (r.type === "bad" ? 10 : 6);
+        }
+      }
+      score = Math.max(10, Math.min(99, score));
+
+      // highlight
+      for(const w of [...new Set(hits)]){
+        const safe = escapeHtml(w);
+        rendered = rendered.split(safe).join(`<span style="
+          padding:2px 6px;border-radius:8px;
+          border:1px solid rgba(239,68,68,.28);
+          background: rgba(239,68,68,.10);
+          color:#b91c1c;font-weight:900;
+        ">${safe}</span>`);
+      }
+
+      // badge
+      const badge = document.getElementById("resultBadge");
+      if(score >= 85) badge.textContent = "좋음";
+      else if(score >= 70) badge.textContent = "주의";
+      else badge.textContent = "위험";
+
+      document.getElementById("score").textContent = String(score);
+      document.getElementById("rendered").innerHTML = rendered;
+
+      setHL([...new Set(hits)]);
+
+      // alternatives (simple tone templates)
+      const benefitStub = (goal === "예약") ? "원하시는 시간대 확인 후 예약 도와드릴게요."
+                      : (goal === "구매") ? "원하시면 지금 바로 옵션/가격 안내드릴게요."
+                      : "현재 상황에 맞는 안내를 빠르게 드릴게요.";
+
+      const toneLine =
+        tone === "친근" ? "부담 없이 톡 주세요 🙂"
+        : tone === "프리미엄" ? "정중하게 안내드리겠습니다."
+        : tone === "단호" ? "가능 여부부터 빠르게 확인해드릴게요."
+        : "필요 정보만 간단히 안내드릴게요.";
+
+      const safeAlt = [
+        `✅ (${industry}/${channel}) “${goal}” 유도 문구: 지금 문의주시면 ${benefitStub} ${toneLine}`,
+        `✅ 과장/단정 표현을 줄인 버전: “상황에 맞게 선택 가능한 옵션을 준비했습니다. 자세한 내용은 문의로 안내드립니다.”`,
+        `✅ 신뢰 강화 버전: “가격/조건/주의사항을 투명하게 안내합니다. 궁금한 점은 메시지로 남겨주세요.”`,
+        `✅ 짧은 CTA 버전: “지금 ${goal} 가능 여부 확인하기 →”`,
+        `✅ 채널 최적화 버전: “(${channel}) 핵심만 1줄 요약 + 링크/문의 버튼으로 연결”`
+      ].join("\n\n");
+
+      document.getElementById("alts").textContent = safeAlt;
+
+      // disclosure label
+      let label = "※ (자동 추천) 채널 정책에 따라 “광고/프로모션/협찬 포함” 표기가 필요할 수 있습니다.";
+      if(labelMode === "on"){
+        label = "※ 광고 고지 문구(필수표기): “광고/프로모션 포함” (게시물 상단/첫 문장 근처 권장)";
+      }
+      if(labelMode === "off"){
+        label = "고지 문구를 포함하지 않도록 설정했습니다.";
+      }
+      document.getElementById("labelText").textContent = label;
+
+      // auto scroll to result
+      scrollToId("checker");
+    }
+  </script>
+</body>
+</html>
