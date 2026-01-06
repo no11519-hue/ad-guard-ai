@@ -395,7 +395,13 @@
       <div class="topActions">
         <div class="pill">⏱️ 15초 광고문구 점검</div>
         <button class="btn ghost" onclick="scrollToId('pricing')">요금제</button>
-        <button class="btn" onclick="alert('문의 기능은 연결만 하면 됩니다. (카톡 채널/구글폼 링크 등)')">문의하기</button>
+
+        <!-- ✅ Tally 모달 열기: 문의하기 -->
+        <button class="btn"
+          data-tally-open="xXMRk5"
+          data-tally-layout="modal"
+          data-tally-width="600"
+        >문의하기</button>
       </div>
     </div>
 
@@ -554,7 +560,14 @@
 
         <div class="formActions">
           <button class="btn btnWide" onclick="runCheck()">위험표현 체크 + 대체문구 만들기</button>
-          <button class="btn ghost btnWide" onclick="alert('PDF 저장 기능은 버튼 연결만 하면 됩니다. (예: 결제 후 다운로드 링크)')">결과 저장/PDF 받기</button>
+
+          <!-- ✅ Tally 모달 열기: 결과 저장/PDF 받기 -->
+          <button class="btn ghost btnWide"
+            data-tally-open="xXMRk5"
+            data-tally-layout="modal"
+            data-tally-width="600"
+          >결과 저장/PDF 받기</button>
+
           <button class="smallBtn" onclick="clearAll()">지우기</button>
         </div>
 
@@ -847,13 +860,10 @@
 
       // auto scroll to result
       scrollToId("checker");
-      <button data-tally-open="YOUR_FORM_ID" data-tally-layout="modal">
-  광고 문구 요청하기
-</button>
-
-<script async src="https://tally.so/widgets/embed.js"></script>
-
     }
   </script>
+
+  <!-- ✅ Tally 위젯 스크립트는 페이지에서 1번만 로드 -->
+  <script async src="https://tally.so/widgets/embed.js"></script>
 </body>
 </html>
