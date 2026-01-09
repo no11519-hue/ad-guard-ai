@@ -3,1696 +3,967 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AD-Guard AI · 메타 광고 반려 줄이는 문구 자동 교정</title>
+  <title>AD-Guard AI | 메타 광고 반려 줄여주는 문구 자동 교정</title>
   <link rel="icon" href="data:,">
 
-  <!-- Pretendard -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-
-  <!-- Tailwind (CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pretendard (optional) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 
   <style>
-    html, body {
-      font-family: Pretendard, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-    }
-    .bg-grid {
-      background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.06) 1px, transparent 0);
-      background-size: 18px 18px;
-    }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    :root{
+      --bg0:#f6f9ff;
+      --bg1:#eef5ff;
+      --panel:#ffffff;
+      --text:#0b1b3a;
+      --muted:#51607a;
+      --muted2:#6b7a96;
+      --line:#dbe7ff;
 
-    /* simple syntax-ish */
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+      --blue:#2563eb;
+      --blue2:#1d4ed8;
+      --good:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+
+      --radius:16px;
+      --shadow: 0 12px 40px rgba(10,30,70,.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(1000px 500px at 30% 0%, var(--bg1), var(--bg0));
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:1100px; margin:0 auto; padding:24px}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px; border:1px solid var(--line); border-radius:999px;
+      background:rgba(255,255,255,.75); backdrop-filter: blur(8px);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px; font-weight:800;
+      letter-spacing:-.02em;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: linear-gradient(135deg, var(--blue), #7c3aed);
+      box-shadow: 0 10px 30px rgba(37,99,235,.22);
+    }
+    .nav{
+      display:flex; gap:14px; align-items:center;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .nav a{padding:8px 10px; border-radius:999px}
+    .nav a:hover{background:rgba(37,99,235,.08); color:var(--text)}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.9);
+      color:var(--muted);
+      font-weight:700;
+      font-size:13px;
+    }
+    .hero{padding:34px 0 18px}
+    .hgrid{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:22px;
+      align-items:stretch;
+    }
+    @media (max-width: 900px){
+      .hgrid{grid-template-columns: 1fr}
+    }
+    h1{
+      margin:14px 0 10px;
+      font-size:44px; line-height:1.06;
+      letter-spacing:-.04em;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:16px; line-height:1.55;
+      margin:0 0 16px;
+    }
+    .ctaRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+    .btn{
+      border:0; cursor:pointer;
+      padding:12px 14px; border-radius:14px;
+      font-weight:800;
+      font-size:14px;
+      display:inline-flex; align-items:center; gap:10px;
+      box-shadow: 0 10px 30px rgba(10,30,70,.10);
+    }
+    .btn.primary{background:linear-gradient(135deg, var(--blue), var(--blue2)); color:white}
+    .btn.ghost{background:white; border:1px solid var(--line); color:var(--text); box-shadow:none}
+    .btn:active{transform:translateY(1px)}
+    .card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      background:linear-gradient(180deg, rgba(37,99,235,.06), rgba(255,255,255,0));
+    }
+    .cardHead strong{font-size:14px}
+    .cardBody{padding:16px}
+    .stepList{
+      display:grid; gap:10px;
+    }
+    .step{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:white;
+    }
+    .num{
+      width:26px; height:26px; border-radius:10px;
+      display:grid; place-items:center;
+      font-weight:900; color:white;
+      background:linear-gradient(135deg, var(--blue), #7c3aed);
+      flex:0 0 auto;
+    }
+    .step b{display:block; font-size:13px}
+    .step span{display:block; font-size:12px; color:var(--muted); margin-top:2px; line-height:1.4}
+    .grid{
+      display:grid; gap:14px;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr}
+    }
+    label{display:block; font-weight:800; font-size:12px; margin:0 0 6px}
+    input, textarea, select{
+      width:100%;
+      padding:12px 12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:white;
+      color:var(--text);
+      font-size:14px;
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical; line-height:1.5}
+    .hint{font-size:12px; color:var(--muted2); margin-top:6px; line-height:1.4}
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:white;
+      font-weight:800; font-size:12px;
+      color:var(--muted);
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip[data-on="1"]{border-color: rgba(37,99,235,.35); color:var(--text); background: rgba(37,99,235,.08)}
+    .sectionTitle{
+      display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+      margin:18px 0 10px;
+    }
+    .sectionTitle h2{margin:0; font-size:18px; letter-spacing:-.02em}
+    .mini{font-size:12px; color:var(--muted2)}
+    .resultGrid{
+      display:grid; grid-template-columns: .9fr 1.1fr; gap:14px;
+    }
+    @media (max-width: 900px){.resultGrid{grid-template-columns:1fr}}
+    .scoreBox{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:white;
+      padding:14px;
+    }
+    .scoreTop{display:flex; align-items:center; justify-content:space-between}
+    .badge{
+      font-size:12px; font-weight:900;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+    }
+    .badge.good{color:var(--good)}
+    .badge.warn{color:#a16207}
+    .badge.bad{color:var(--bad)}
+    .bigScore{
+      font-size:44px; font-weight:950; letter-spacing:-.04em; margin-top:6px;
+    }
+    .reasonList{margin:10px 0 0; padding-left:16px; color:var(--muted); line-height:1.5}
+    .reasonList li{margin:4px 0}
+    .panel{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:white;
+      padding:14px;
+    }
+    .panel h3{margin:0 0 10px; font-size:14px}
+    .twoCols{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    @media (max-width: 900px){.twoCols{grid-template-columns:1fr}}
+    .box{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(246,249,255,.55);
+      padding:10px;
+    }
+    .boxTitle{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:6px;
+    }
+    .boxTitle b{font-size:12px}
+    .copyBtn{
+      border:1px solid var(--line);
+      background:white;
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+    }
+    .copyBtn:active{transform:translateY(1px)}
+    .mono{white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; line-height:1.5}
+    .riskPills{display:flex; gap:8px; flex-wrap:wrap}
+    .rp{
+      font-size:12px; font-weight:900;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+    }
+    .rp.bad{border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.07); color:#991b1b}
+    .rp.warn{border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.09); color:#92400e}
+    .rp.good{border-color: rgba(22,163,74,.35); background: rgba(22,163,74,.09); color:#14532d}
+    .foot{
+      margin:18px 0 30px;
+      color:var(--muted2);
+      font-size:12px;
+      line-height:1.5;
+    }
+    .hr{height:1px; background:var(--line); margin:16px 0}
+    .hidden{display:none !important}
   </style>
 </head>
 
-<body class="bg-slate-50 text-slate-900">
-  <!-- Top bar -->
-  <header class="sticky top-0 z-40 backdrop-blur bg-white/75 border-b border-slate-200">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center font-bold">AD</div>
-        <div class="leading-tight">
-          <div class="font-semibold">AD-Guard AI</div>
-          <div class="text-xs text-slate-500">메타(인스타) 광고 반려 줄이는 문구 자동 교정</div>
-        </div>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>AD-Guard AI</div>
+        <span class="pill">FREE · 브라우저에서 즉시 실행</span>
       </div>
-
-      <nav class="hidden md:flex items-center gap-6 text-sm">
-        <a class="text-slate-600 hover:text-slate-900" href="#demo">데모</a>
-        <a class="text-slate-600 hover:text-slate-900" href="#how">동작 방식</a>
-        <a class="text-slate-600 hover:text-slate-900" href="#pricing">사업화</a>
-        <a class="text-slate-600 hover:text-slate-900" href="#faq">FAQ</a>
-      </nav>
-
-      <div class="flex items-center gap-2">
-        <span class="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-          DEMO · 브라우저 로컬
-        </span>
-        <a href="#demo" class="hidden sm:inline-flex px-3 py-2 rounded-xl bg-slate-900 text-white text-sm hover:bg-slate-800">
-          바로 점검하기
-        </a>
+      <div class="nav">
+        <a href="#start">바로 사용</a>
+        <a href="#how">작동 방식</a>
+        <a href="#faq">FAQ</a>
       </div>
     </div>
-  </header>
 
-  <!-- Hero -->
-  <section class="bg-white">
-    <div class="max-w-6xl mx-auto px-4 py-14">
-      <div class="grid lg:grid-cols-2 gap-10 items-center">
+    <section class="hero">
+      <div class="hgrid">
         <div>
-          <div class="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-            <span class="font-semibold">한 방에 이해</span>
-            <span class="text-slate-500">“반려 줄이고, 성과 올리는 문구 세트”</span>
-          </div>
-
-          <h1 class="mt-4 text-3xl md:text-5xl font-bold leading-tight">
-            메타(인스타) 광고<br class="hidden md:block"/>
-            <span class="text-slate-900">반려 줄여주는 문구 자동 교정</span>
-          </h1>
-
-          <p class="mt-4 text-slate-600 text-base md:text-lg">
-            상품/타겟/오퍼만 입력하면
-            <span class="font-semibold">안전 점수 + 위험표현 이유 + 교정 전/후 + 통과용 3버전 + 채널별 복붙 세트</span>가 한 번에 나옵니다.
+          <span class="pill">메타 광고 심사 · 반려 사유 번역 · 채널별 복붙 세트</span>
+          <h1>메타 광고 반려를 줄여주는<br>문구 자동 교정</h1>
+          <p class="sub">
+            “왜 반려인지”를 한국어로 납득되게 보여주고, 위험표현을 교정해 <b>통과 확률</b>을 올립니다.<br>
+            결과는 <b>점수 + 이유 + 교정 전/후 + 채널별 세트</b>로 한 화면에 정리됩니다.
           </p>
-
-          <ul class="mt-6 space-y-2 text-slate-700">
-            <li class="flex gap-2"><span class="mt-1">✅</span> 점수(0~100) + “왜 위험한지” 한 줄 설명</li>
-            <li class="flex gap-2"><span class="mt-1">✅</span> 교정 전/후 비교 + 수정본 3개(보수/표준/공격)</li>
-            <li class="flex gap-2"><span class="mt-1">✅</span> 메타 광고 필드(Primary/Headline/Desc) + 랜딩/DM/인스타캡션 복붙</li>
-            <li class="flex gap-2"><span class="mt-1">✅</span> 반려 사유 번역기: 메시지 붙여넣기 → 해석/추정 트리거/수정 액션/수정본 3개</li>
-          </ul>
-
-          <div class="mt-8 flex flex-col sm:flex-row gap-3">
-            <a href="#demo" class="px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-slate-800 text-center">
-              무료로 점검하기
-            </a>
-            <a href="#pricing" class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 font-semibold hover:bg-slate-50 text-center">
-              사업화 모델 보기
-            </a>
+          <div class="ctaRow">
+            <a class="btn primary" href="#start">지금 바로 점검하기</a>
+            <button class="btn ghost" id="btnRejJump">반려 사유 번역기</button>
           </div>
-
-          <p class="mt-4 text-xs text-slate-500 leading-relaxed">
-            ※ 데모는 규칙 기반(로컬)입니다. PRO에서는 AI + 템플릿/저장/팀공유로 확장하는 구조로 설계하세요.
-          </p>
+          <div class="foot">
+            * 최종 심사 결과는 Meta 정책/심사 기준 및 업종·랜딩·계정 상태에 따라 달라질 수 있습니다. (통과 “보장”은 불가)
+          </div>
         </div>
 
-        <div class="relative">
-          <div class="rounded-3xl border border-slate-200 bg-grid p-6">
-            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
-              <div class="flex items-center justify-between">
-                <div class="text-sm font-semibold">결과 미리보기</div>
-                <div class="text-xs text-slate-500">“와… 이대로 올리면 되겠는데?”</div>
-              </div>
-
-              <div class="mt-4 grid gap-3">
-                <div class="rounded-xl border border-slate-200 p-4">
-                  <div class="text-xs text-slate-500">안전 점수</div>
-                  <div class="mt-1 text-2xl font-bold">82<span class="text-sm text-slate-500">/100</span></div>
-                  <div class="mt-2 text-sm text-slate-600">
-                    단정/보장 표현만 완화하면 통과 확률이 올라갑니다.
-                  </div>
-                </div>
-
-                <div class="rounded-xl border border-slate-200 p-4">
-                  <div class="text-xs text-slate-500">교정 전/후</div>
-                  <div class="mt-2 text-sm text-slate-700">
-                    <span class="text-slate-500">Before:</span> “무조건 효과 보장”
-                    <br/>
-                    <span class="text-slate-500">After:</span> “상황에 따라 도움이 될 수 있어요”
-                  </div>
-                </div>
-
-                <div class="rounded-xl border border-slate-200 p-4">
-                  <div class="text-xs text-slate-500">메타 광고 복붙</div>
-                  <div class="mt-2 text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-                    Primary Text / Headline / Description 3개 필드로 자동 분해
-                  </div>
+        <div class="card">
+          <div class="cardHead">
+            <strong>한 번에 흐름</strong>
+            <span class="pill">“와 좋다” 포인트: 복붙</span>
+          </div>
+          <div class="cardBody">
+            <div class="stepList">
+              <div class="step">
+                <div class="num">1</div>
+                <div>
+                  <b>상품/서비스 한 줄</b>
+                  <span>뭐를 파는지, 누구에게 필요한지</span>
                 </div>
               </div>
-
-              <div class="mt-4 text-xs text-slate-500">
-                PRO에서는 “근거 링크/업종 템플릿/히스토리/승인”이 추가되면 결제가 됩니다.
+              <div class="step">
+                <div class="num">2</div>
+                <div>
+                  <b>타겟·오퍼 + 금지표현 체크</b>
+                  <span>심사에서 걸리기 쉬운 표현 자동 탐지</span>
+                </div>
+              </div>
+              <div class="step">
+                <div class="num">3</div>
+                <div>
+                  <b>결과: 점수/리스크/대체문구/채널별 세트</b>
+                  <span>IG 본문/헤드라인/설명/랜딩 첫 문장/DM 첫 문장</span>
+                </div>
+              </div>
+              <div class="step">
+                <div class="num">+</div>
+                <div>
+                  <b>반려 사유 번역기</b>
+                  <span>메타 반려 메시지 붙여넣기 → 어디를 바꾸면 좋은지 바로 안내</span>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="absolute -z-10 -top-6 -right-6 w-36 h-36 rounded-full bg-slate-200 blur-2xl opacity-70"></div>
-          <div class="absolute -z-10 -bottom-8 -left-8 w-40 h-40 rounded-full bg-emerald-200 blur-2xl opacity-40"></div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Demo -->
-  <section id="demo" class="max-w-6xl mx-auto px-4 py-12">
-    <div class="flex items-end justify-between gap-4">
-      <div>
-        <h2 class="text-2xl md:text-3xl font-bold">데모</h2>
-        <p class="mt-2 text-slate-600">
-          아래 입력 → 결과에서 <span class="font-semibold">복사 버튼</span> 눌러 바로 쓰시면 됩니다.
-        </p>
+    <section id="start" class="card">
+      <div class="cardHead">
+        <strong>바로 사용</strong>
+        <span class="mini">입력 → 점검/교정 → 복붙</span>
       </div>
-
-      <div class="hidden md:flex items-center gap-2 text-xs text-slate-500">
-        <span class="px-2 py-1 rounded-full bg-white border border-slate-200">서버 저장 없음</span>
-        <span class="px-2 py-1 rounded-full bg-white border border-slate-200">브라우저 로컬 처리</span>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="mt-6 flex gap-2">
-      <button id="tabCheck" class="px-4 py-2 rounded-2xl bg-slate-900 text-white text-sm font-semibold">광고 문구 점검</button>
-      <button id="tabReject" class="px-4 py-2 rounded-2xl bg-white border border-slate-200 text-slate-800 text-sm font-semibold hover:bg-slate-50">반려 사유 번역기</button>
-    </div>
-
-    <div class="mt-6 grid lg:grid-cols-2 gap-6">
-      <!-- Input -->
-      <div class="rounded-3xl bg-white border border-slate-200 shadow-sm p-5">
-        <div class="flex items-center justify-between">
-          <h3 class="font-semibold">① 입력</h3>
-          <span id="charCount" class="text-xs text-slate-500">0자</span>
-        </div>
-
-        <p class="mt-2 text-sm text-slate-500">
-          “문장 생성”이 아니라, <span class="font-semibold">심사 통과 + 성과</span> 워크플로우로 입력합니다.
-        </p>
-
-        <!-- Workflow inputs -->
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="cardBody">
+        <div class="grid">
           <div>
-            <label class="text-xs text-slate-600">관계(표시문구)</label>
-            <select id="relationship" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm">
-              <option value="유료광고">유료광고</option>
-              <option value="협찬">협찬</option>
-              <option value="제휴">제휴/파트너</option>
-              <option value="자사홍보">자사홍보</option>
+            <label>1) 광고할 상품/서비스 한 줄</label>
+            <input id="iProduct" placeholder="예) 인천 서구 1:1 PT — 체형/자세 분석 기반 맞춤 운동" />
+            <div class="hint">가능하면 업종/지역/핵심 특징이 들어가면 결과가 좋아집니다.</div>
+          </div>
+
+          <div>
+            <label>채널</label>
+            <select id="iPlatform">
+              <option value="meta">메타(인스타/페북)</option>
+              <option value="naver">네이버(플레이스/파워링크/블로그)</option>
+              <option value="kakao">카카오(채널/톡채널)</option>
+              <option value="etc">기타</option>
             </select>
-          </div>
-          <div>
-            <label class="text-xs text-slate-600">플랫폼</label>
-            <select id="platform" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm">
-              <option value="all">한 번에(추천)</option>
-              <option value="meta_ads">메타 광고(Ads)</option>
-              <option value="instagram">인스타 포스트/릴스</option>
-              <option value="blog">블로그</option>
-              <option value="kakao">카카오/문자</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-xs text-slate-600">업종</label>
-            <select id="category" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm">
-              <option value="general">일반</option>
-              <option value="diet">다이어트/건강</option>
-              <option value="beauty">뷰티/화장품</option>
-              <option value="finance">금융/수익</option>
-              <option value="local">로컬 매장</option>
-              <option value="ai">AI 서비스</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="mt-4 grid gap-3">
-          <div>
-            <label class="text-xs text-slate-600">(1) 광고할 상품/서비스 한 줄</label>
-            <input id="productService" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm" placeholder="예: 인천 서구 24시간 카페 ‘하이테이블’" />
+            <div class="hint">기본은 메타 기준으로 점검하고, 채널별 문장 세트를 생성합니다.</div>
           </div>
 
           <div>
-            <label class="text-xs text-slate-600">(2) 타겟</label>
-            <input id="target" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm" placeholder="예: 늦게까지 공부/작업하는 20~40대" />
+            <label>2) 타겟(누구에게)</label>
+            <input id="iTarget" placeholder="예) 운동 초보 / 바쁜 직장인 / 산후 6개월" />
           </div>
 
           <div>
-            <label class="text-xs text-slate-600">(2) 오퍼(혜택/조건)</label>
-            <input id="offer" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm" placeholder="예: 첫 방문 아메리카노 1+1 (기간/조건)" />
+            <label>오퍼(혜택/조건)</label>
+            <input id="iOffer" placeholder="예) 첫 상담 무료 / 2주 체험권 / 20% 할인(기간 한정)" />
+          </div>
+
+          <div>
+            <label>추가 맥락(선택)</label>
+            <input id="iContext" placeholder="예) 통증 치료/완치 같은 표현은 쓰지 말고, ‘도움’ 수준으로" />
+            <div class="hint">원하시는 톤(친근/단호/고급)이나 피하고 싶은 단어가 있으면 써주세요.</div>
+          </div>
+
+          <div>
+            <label>협찬/체험단/인플루언서인가요?</label>
+            <div class="row">
+              <div class="chip" id="chipDisclosure" data-on="0">예, 표시문구 필요</div>
+              <div class="chip" id="chipNoClaims" data-on="1">“보장/확정” 표현 금지</div>
+              <div class="chip" id="chipNoSuperlative" data-on="1">“최고/1등” 표현 금지</div>
+            </div>
+            <div class="hint">체크하면 “표시문구(디스클로저) + 채널별 위치 안내”가 같이 나옵니다.</div>
+          </div>
+
+          <div style="grid-column:1/-1">
+            <label>3) 현재 광고 문구(붙여넣기)</label>
+            <textarea id="iAdText" placeholder="예) 2주 만에 확실히 바뀝니다! 100% 만족 보장. 지금 신청하세요."></textarea>
+            <div class="hint">문구가 없으면, 위 입력만으로도 “초안 + 안전 버전 + 채널별 세트”를 만들어드립니다.</div>
+          </div>
+
+          <div style="grid-column:1/-1">
+            <label>반려 사유 번역기(선택) — 메타 반려 메시지 붙여넣기</label>
+            <textarea id="iRej" placeholder="예) Your ad was rejected because it contains misleading claims..."></textarea>
+            <div class="hint">반려 메시지를 넣으면, 한국어 해석 + 수정 방향 + 수정본 3개가 같이 나옵니다.</div>
           </div>
         </div>
 
-        <!-- Forbidden expression checklist -->
-        <div class="mt-5">
-          <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold">금지/주의 표현 체크(선택)</div>
-            <div class="text-xs text-slate-500">체크하면 더 빡세게 잡습니다</div>
-          </div>
+        <div class="hr"></div>
 
-          <div class="mt-3 grid sm:grid-cols-2 gap-2 text-sm">
-            <label class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-              <input type="checkbox" class="h-4 w-4" id="chkGuarantee"/>
-              <span>보장/확정/100%/무조건</span>
-            </label>
-            <label class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-              <input type="checkbox" class="h-4 w-4" id="chkNoSideEffects"/>
-              <span>부작용 없음/전혀 없음</span>
-            </label>
-            <label class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-              <input type="checkbox" class="h-4 w-4" id="chkCure"/>
-              <span>완치/즉시 개선</span>
-            </label>
-            <label class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
-              <input type="checkbox" class="h-4 w-4" id="chkFinanceGuarantee"/>
-              <span>원금보장/수익확정</span>
-            </label>
-          </div>
+        <div class="row">
+          <button class="btn primary" id="btnRun">심사 통과 점검 & 교정</button>
+          <button class="btn ghost" id="btnRej">반려 사유 번역만 보기</button>
+
+          <!-- Optional: AI endpoint -->
+          <span class="pill" title="AI 연동은 별도 API(서버/워커)가 필요합니다.">AI 연동: <b id="aiState">OFF</b></span>
         </div>
 
-        <!-- Mode-specific input -->
-        <div id="checkModeBox" class="mt-5">
-          <label class="text-xs text-slate-600">(3) 원문(광고 문구/랜딩 문구) 붙여넣기</label>
-          <textarea
-            id="originalText"
-            class="mt-2 w-full h-44 px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-            placeholder="예) 한 달에 -7kg! 무조건 빠집니다. 100% 효과 보장. 지금 문의하세요!"
-          ></textarea>
+        <div class="foot">
+          * 이 페이지는 “문구” 기준 점검입니다. 심사 결과는 이미지/랜딩/업종/계정 상태까지 함께 영향을 받습니다.
         </div>
-
-        <div id="rejectModeBox" class="mt-5 hidden">
-          <label class="text-xs text-slate-600">반려된 원문(광고 문구)</label>
-          <textarea
-            id="rejectedOriginalText"
-            class="mt-2 w-full h-28 px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-            placeholder="반려된 광고 문구 원문을 붙여넣어주세요"
-          ></textarea>
-
-          <label class="mt-4 text-xs text-slate-600">메타 반려 사유 메시지(그대로)</label>
-          <textarea
-            id="rejectionMessage"
-            class="mt-2 w-full h-28 px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-            placeholder="예) This ad can't run because it violates our policy on..."
-          ></textarea>
-        </div>
-
-        <!-- Sample buttons -->
-        <div class="mt-3 flex flex-wrap gap-2">
-          <button class="sampleBtn text-xs px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200" data-sample="local">예시(로컬)</button>
-          <button class="sampleBtn text-xs px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200" data-sample="diet">예시(다이어트)</button>
-          <button class="sampleBtn text-xs px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200" data-sample="beauty">예시(화장품)</button>
-          <button class="sampleBtn text-xs px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200" data-sample="finance">예시(수익)</button>
-          <button class="sampleBtn text-xs px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200" data-sample="ai">예시(AI)</button>
-        </div>
-
-        <!-- Buttons -->
-        <div class="mt-5 flex flex-col sm:flex-row gap-2">
-          <button id="runBtn" class="px-4 py-3 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-slate-800">
-            실행하기
-          </button>
-          <button id="safeBtn" class="px-4 py-3 rounded-2xl bg-white border border-slate-200 font-semibold hover:bg-slate-50">
-            안전 버전으로 변환
-          </button>
-          <button id="clearBtn" class="px-4 py-3 rounded-2xl bg-white border border-slate-200 font-semibold hover:bg-slate-50">
-            지우기
-          </button>
-        </div>
-
-        <p class="mt-4 text-xs text-slate-500 leading-relaxed">
-          ※ 본 결과는 법률 자문이 아닌 일반적인 안전 가이드입니다. 최종 게시 책임은 사용자에게 있습니다.
-        </p>
       </div>
+    </section>
 
-      <!-- Output -->
-      <div class="rounded-3xl bg-white border border-slate-200 shadow-sm p-5">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="font-semibold">② 결과</h3>
-          <div class="flex gap-2">
-            <button id="copyAllBtn" class="text-sm px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800">
-              결과 전체 복사
-            </button>
-          </div>
-        </div>
+    <section class="card" style="margin-top:16px">
+      <div class="cardHead">
+        <strong>결과</strong>
+        <span class="mini">점수 + 이유 + 교정 전/후 + 복붙 세트</span>
+      </div>
+      <div class="cardBody">
 
-        <div id="emptyState" class="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-slate-600">
-          <div class="font-semibold">아직 결과가 없습니다</div>
-          <div class="mt-1 text-sm">왼쪽에 입력 후 <span class="font-semibold">실행하기</span>를 눌러주세요.</div>
-        </div>
-
-        <div id="resultWrap" class="mt-6 hidden space-y-4">
-          <!-- Score -->
-          <div class="rounded-2xl border border-slate-200 p-4">
-            <div class="flex items-center justify-between">
+        <div class="resultGrid">
+          <div class="scoreBox">
+            <div class="scoreTop">
               <div>
-                <div class="text-xs text-slate-500">안전 점수</div>
-                <div class="mt-1 text-3xl font-bold"><span id="scoreText">0</span><span class="text-sm text-slate-500">/100</span></div>
+                <div class="mini">통과 가능성 점수(0~100)</div>
+                <div class="bigScore" id="rScore">—</div>
               </div>
-              <div class="w-2/3">
-                <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
-                  <div id="scoreBar" class="h-2 rounded-full bg-emerald-500" style="width:0%"></div>
-                </div>
-                <div id="scoreHint" class="mt-2 text-xs text-slate-500">
-                  단정/보장 표현을 줄이면 점수가 올라갑니다.
-                </div>
-              </div>
+              <span class="badge" id="rBadge">대기</span>
             </div>
+            <div class="hr"></div>
+            <div class="mini" style="margin-bottom:6px">리스크 요약</div>
+            <div class="riskPills" id="rPills"></div>
 
-            <div class="mt-4">
-              <div class="text-xs text-slate-500">한 줄 이유</div>
-              <div id="scoreReason" class="mt-2 text-sm text-slate-800"></div>
-            </div>
-
-            <div class="mt-4">
-              <div class="text-xs text-slate-500">요약</div>
-              <ul id="summaryList" class="mt-2 space-y-1 text-sm text-slate-700 list-disc pl-5"></ul>
-            </div>
+            <ul class="reasonList" id="rReasons"></ul>
           </div>
 
-          <!-- Risk items -->
-          <div class="rounded-2xl border border-slate-200 p-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">왜 위험한지 (표현 기준으로)</div>
-              <div class="text-xs text-slate-500">문구 단위로 콕 찝어드립니다</div>
-            </div>
-            <div id="riskList" class="mt-3 space-y-3"></div>
-          </div>
-
-          <!-- Before/After -->
-          <div class="rounded-2xl border border-slate-200 p-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">교정 전/후 한 화면</div>
-              <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="afterSafe">교정 후 복사</button>
-            </div>
-
-            <div class="mt-3 grid md:grid-cols-2 gap-3">
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="text-xs text-slate-500">Before</div>
-                <div id="beforeText" class="mt-2 text-sm whitespace-pre-wrap"></div>
-              </div>
-              <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-3">
-                <div class="text-xs text-emerald-700">After (안전 버전)</div>
-                <div id="afterSafe" class="mt-2 text-sm whitespace-pre-wrap"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Variants -->
-          <div class="rounded-2xl border border-slate-200 p-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">통과 확률 올리는 수정본 3개</div>
-              <div class="text-xs text-slate-500">보수/표준/공격</div>
-            </div>
-
-            <div class="mt-3 grid gap-3">
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs text-slate-500">보수(가장 안전)</div>
-                  <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="vConservative">복사</button>
+          <div class="panel">
+            <h3>교정 전/후</h3>
+            <div class="twoCols">
+              <div class="box">
+                <div class="boxTitle">
+                  <b>교정 전</b>
+                  <button class="copyBtn" data-copy="#rBefore">복붙</button>
                 </div>
-                <div id="vConservative" class="mt-2 text-sm whitespace-pre-wrap"></div>
+                <div class="mono" id="rBefore">—</div>
               </div>
-
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs text-slate-500">표준(밸런스)</div>
-                  <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="vStandard">복사</button>
+              <div class="box">
+                <div class="boxTitle">
+                  <b>교정 후(안전 버전)</b>
+                  <button class="copyBtn" data-copy="#rAfter">복붙</button>
                 </div>
-                <div id="vStandard" class="mt-2 text-sm whitespace-pre-wrap"></div>
+                <div class="mono" id="rAfter">—</div>
               </div>
+            </div>
 
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs text-slate-500">공격(성과 지향)</div>
-                  <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="vAggressive">복사</button>
-                </div>
-                <div id="vAggressive" class="mt-2 text-sm whitespace-pre-wrap"></div>
+            <div class="hr"></div>
+
+            <h3>반려 사유 번역기</h3>
+            <div class="box">
+              <div class="boxTitle">
+                <b>해석/수정 방향</b>
+                <button class="copyBtn" data-copy="#rRejOut">복붙</button>
               </div>
+              <div class="mono" id="rRejOut">—</div>
             </div>
           </div>
+        </div>
 
-          <!-- Disclosure -->
-          <div class="rounded-2xl border border-slate-200 p-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">표기문구(디스클로저) 자동 추천</div>
-              <div class="text-xs text-slate-500">어디에 넣는지까지</div>
-            </div>
+        <div class="hr"></div>
 
-            <div class="mt-3 grid gap-3">
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs text-slate-500">짧게</div>
-                  <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="labelShort">복사</button>
-                </div>
-                <div id="labelShort" class="mt-2 mono text-sm whitespace-pre-wrap"></div>
-              </div>
-
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs text-slate-500">길게</div>
-                  <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="labelLong">복사</button>
-                </div>
-                <div id="labelLong" class="mt-2 mono text-sm whitespace-pre-wrap"></div>
-              </div>
-
-              <div class="rounded-xl bg-white border border-slate-200 p-3">
-                <div class="text-xs text-slate-500">권장 위치</div>
-                <ul id="placementList" class="mt-2 text-sm text-slate-700 list-disc pl-5"></ul>
-              </div>
-            </div>
+        <div class="panel">
+          <h3>채널별 “복붙” 세트</h3>
+          <div class="twoCols" id="rPack">
+            <!-- filled by JS -->
           </div>
 
-          <!-- Channel pack -->
-          <div class="rounded-2xl border border-slate-200 p-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">채널별 복붙 세트</div>
-              <div class="text-xs text-slate-500">“바로 써서 돈 아끼는” 구간</div>
-            </div>
+          <div class="hr"></div>
 
-            <div class="mt-3 grid gap-3">
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs text-slate-500">메타 광고 · Primary Text</div>
-                  <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="metaPrimary">복사</button>
-                </div>
-                <div id="metaPrimary" class="mt-2 text-sm whitespace-pre-wrap"></div>
-              </div>
-
-              <div class="grid md:grid-cols-2 gap-3">
-                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                  <div class="flex items-center justify-between">
-                    <div class="text-xs text-slate-500">메타 광고 · Headline</div>
-                    <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="metaHeadline">복사</button>
-                  </div>
-                  <div id="metaHeadline" class="mt-2 text-sm whitespace-pre-wrap"></div>
-                </div>
-
-                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                  <div class="flex items-center justify-between">
-                    <div class="text-xs text-slate-500">메타 광고 · Description</div>
-                    <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="metaDesc">복사</button>
-                  </div>
-                  <div id="metaDesc" class="mt-2 text-sm whitespace-pre-wrap"></div>
-                </div>
-              </div>
-
-              <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs text-slate-500">랜딩 첫 문장</div>
-                  <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="landingFirst">복사</button>
-                </div>
-                <div id="landingFirst" class="mt-2 text-sm whitespace-pre-wrap"></div>
-              </div>
-
-              <div class="grid md:grid-cols-2 gap-3">
-                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                  <div class="flex items-center justify-between">
-                    <div class="text-xs text-slate-500">DM 첫 문장</div>
-                    <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="dmOpening">복사</button>
-                  </div>
-                  <div id="dmOpening" class="mt-2 text-sm whitespace-pre-wrap"></div>
-                </div>
-
-                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                  <div class="flex items-center justify-between">
-                    <div class="text-xs text-slate-500">카카오/문자</div>
-                    <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="kakaoMsg">복사</button>
-                  </div>
-                  <div id="kakaoMsg" class="mt-2 text-sm whitespace-pre-wrap"></div>
-                </div>
-              </div>
-
-              <div class="grid md:grid-cols-2 gap-3">
-                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                  <div class="flex items-center justify-between">
-                    <div class="text-xs text-slate-500">인스타 캡션</div>
-                    <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="igCaption">복사</button>
-                  </div>
-                  <div id="igCaption" class="mt-2 text-sm whitespace-pre-wrap"></div>
-                </div>
-
-                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                  <div class="flex items-center justify-between">
-                    <div class="text-xs text-slate-500">블로그 인트로</div>
-                    <button class="copyBtn text-xs px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50" data-copy="blogIntro">복사</button>
-                  </div>
-                  <div id="blogIntro" class="mt-2 text-sm whitespace-pre-wrap"></div>
-                </div>
-              </div>
+          <div id="disclosureWrap" class="panel hidden" style="padding:0; border:none; background:transparent">
+            <h3 style="margin-bottom:10px">표시문구(디스클로저) 자동 추천</h3>
+            <div class="twoCols" id="rDisclosure"></div>
+            <div class="foot">
+              * 표기문구는 플랫폼/콘텐츠 형태에 따라 요구가 달라질 수 있습니다. “광고/협찬/유료광고 포함” 등 명확 표기가 안전합니다.
             </div>
           </div>
+        </div>
 
-          <!-- Rejection helper (only relevant in rejection mode) -->
-          <div id="rejectionHelperBox" class="rounded-2xl border border-slate-200 p-4 hidden">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">반려 사유 번역기 결과</div>
-              <div class="text-xs text-slate-500">해석 + 추정 트리거 + 수정 액션</div>
-            </div>
+      </div>
+    </section>
 
-            <div class="mt-3 rounded-xl bg-slate-50 border border-slate-200 p-3">
-              <div class="text-xs text-slate-500">한국어 해석(요약)</div>
-              <div id="rejSummary" class="mt-2 text-sm whitespace-pre-wrap"></div>
-            </div>
-
-            <div class="mt-3 grid md:grid-cols-2 gap-3">
-              <div class="rounded-xl bg-white border border-slate-200 p-3">
-                <div class="text-xs text-slate-500">추정 트리거(가능성)</div>
-                <ul id="rejTriggers" class="mt-2 text-sm text-slate-700 list-disc pl-5"></ul>
-              </div>
-              <div class="rounded-xl bg-white border border-slate-200 p-3">
-                <div class="text-xs text-slate-500">수정 액션(바로 할 것)</div>
-                <ul id="rejActions" class="mt-2 text-sm text-slate-700 list-disc pl-5"></ul>
-              </div>
-            </div>
-
-            <div class="mt-3 text-xs text-slate-500">
-              ※ 이 도구는 반려 메시지를 “실무적으로 이해하기 쉽게” 풀어주는 목적입니다.
-            </div>
+    <section id="how" class="card" style="margin-top:16px">
+      <div class="cardHead">
+        <strong>작동 방식</strong>
+        <span class="mini">“왜 위험한지”가 보이면 신뢰가 올라갑니다</span>
+      </div>
+      <div class="cardBody">
+        <div class="grid">
+          <div class="panel">
+            <h3>1) 위험표현 탐지</h3>
+            <div class="mini">보장/확정, 과장(최고/1등), 오해 유발(단기간), 민감 업종 리스크 등을 감지합니다.</div>
           </div>
-
-          <!-- Checklist -->
-          <div class="rounded-2xl border border-slate-200 p-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">업로드 전 10초 체크리스트</div>
-              <div class="text-xs text-slate-500">실무자용</div>
-            </div>
-            <ul id="checkList" class="mt-3 space-y-2 text-sm text-slate-700"></ul>
+          <div class="panel">
+            <h3>2) “왜 위험한지” 설명</h3>
+            <div class="mini">반려 사유가 모호해도, 사람이 납득할 문장으로 “문구 리스크”를 번역합니다.</div>
+          </div>
+          <div class="panel">
+            <h3>3) 교정본 + 대체문구</h3>
+            <div class="mini">원문을 최대한 유지하면서, 심사에서 걸리기 쉬운 단어를 “안전 표현”으로 바꿉니다.</div>
+          </div>
+          <div class="panel">
+            <h3>4) 채널별 세트</h3>
+            <div class="mini">IG 본문/헤드라인/설명/랜딩 첫 문장/DM 첫 문장까지 “복붙” 버튼으로 바로 사용합니다.</div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- How it works -->
-  <section id="how" class="bg-white border-t border-slate-200">
-    <div class="max-w-6xl mx-auto px-4 py-14">
-      <h2 class="text-2xl md:text-3xl font-bold">동작 방식</h2>
-      <p class="mt-2 text-slate-600">
-        지금 데모는 규칙 기반으로 “리스크 표현”을 잡습니다. PRO(유료)에서는 AI + 업종 템플릿으로 정확도가 올라가게 설계하시면 됩니다.
-      </p>
-
-      <div class="mt-8 grid md:grid-cols-3 gap-5">
-        <div class="rounded-3xl border border-slate-200 p-6">
-          <div class="text-sm text-slate-500">STEP 1</div>
-          <div class="mt-2 font-semibold">상품/타겟/오퍼 입력</div>
-          <div class="mt-2 text-sm text-slate-600">한 줄로 정리하면, 결과물(카피 세트)이 훨씬 좋아집니다.</div>
+    <section id="faq" class="card" style="margin-top:16px">
+      <div class="cardHead">
+        <strong>FAQ</strong>
+        <span class="mini">자주 나오는 질문</span>
+      </div>
+      <div class="cardBody">
+        <div class="panel">
+          <h3>Q. 메타가 어차피 걸러주는데, 이게 왜 필요하죠?</h3>
+          <div class="mini">
+            메타 심사는 “통과/반려”만 던지고, 구체 수정 포인트를 친절히 안 알려주는 경우가 많습니다.
+            이 도구는 <b>반려 사유 번역 + 교정 전/후 + 대체문구 3종</b>을 한 번에 줘서, 재심사 왕복을 줄이는 게 목적입니다.
+          </div>
         </div>
-
-        <div class="rounded-3xl border border-slate-200 p-6">
-          <div class="text-sm text-slate-500">STEP 2</div>
-          <div class="mt-2 font-semibold">위험표현 탐지 + 이유</div>
-          <div class="mt-2 text-sm text-slate-600">“왜 위험한지”를 보여주면 신뢰가 올라갑니다.</div>
-        </div>
-
-        <div class="rounded-3xl border border-slate-200 p-6">
-          <div class="text-sm text-slate-500">STEP 3</div>
-          <div class="mt-2 font-semibold">교정 전/후 + 복붙 세트</div>
-          <div class="mt-2 text-sm text-slate-600">메타 광고 필드/랜딩/DM까지 바로 쓰게 만드는 순간 “와”가 나옵니다.</div>
+        <div class="panel" style="margin-top:10px">
+          <h3>Q. 100% 통과 보장인가요?</h3>
+          <div class="mini">
+            아닙니다. 심사 결과는 문구뿐 아니라 이미지/랜딩/업종/계정 상태 등 여러 요소가 영향을 줍니다.
+            다만 <b>문구로 인한 불필요한 반려</b>를 줄이는 데 집중합니다.
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Pricing -->
-  <section id="pricing" class="max-w-6xl mx-auto px-4 py-14">
-    <div class="flex items-end justify-between gap-4">
-      <div>
-        <h2 class="text-2xl md:text-3xl font-bold">사업화(유료) 모델</h2>
-        <p class="mt-2 text-slate-600">
-          데모는 “납득”용. 수익은 PRO(저장/템플릿/팀승인/근거 링크)에서 만드시면 됩니다.
-        </p>
-      </div>
-    </div>
-
-    <div class="mt-8 grid md:grid-cols-3 gap-5">
-      <div class="rounded-3xl border border-slate-200 p-6 bg-white">
-        <div class="text-sm text-slate-500">Free</div>
-        <div class="mt-1 text-2xl font-bold">₩0</div>
-        <ul class="mt-4 space-y-2 text-sm text-slate-700">
-          <li>• 규칙 기반 점검</li>
-          <li>• 복붙 세트 생성</li>
-          <li>• 하루 제한(권장)</li>
-        </ul>
-        <a href="#demo" class="mt-6 inline-flex w-full justify-center px-4 py-3 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-slate-800">
-          무료로 써보기
-        </a>
-      </div>
-
-      <div class="rounded-3xl border border-slate-900 p-6 shadow-sm bg-white">
-        <div class="text-sm text-slate-500">Starter</div>
-        <div class="mt-1 text-2xl font-bold">₩9,900<span class="text-sm text-slate-500">/월</span></div>
-        <ul class="mt-4 space-y-2 text-sm text-slate-700">
-          <li>• AI 교정(문장 퀄리티)</li>
-          <li>• 저장/히스토리</li>
-          <li>• 업종 템플릿</li>
-        </ul>
-        <a id="starterWaitlist" href="#" class="mt-6 inline-flex w-full justify-center px-4 py-3 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-slate-800">
-          대기명단 신청
-        </a>
-      </div>
-
-      <div class="rounded-3xl border border-slate-200 p-6 bg-white">
-        <div class="text-sm text-slate-500">Pro</div>
-        <div class="mt-1 text-2xl font-bold">₩29,000<span class="text-sm text-slate-500">/월</span></div>
-        <ul class="mt-4 space-y-2 text-sm text-slate-700">
-          <li>• 팀 공유/승인 워크플로우</li>
-          <li>• 근거/가이드 링크</li>
-          <li>• 대행사/셀러용 패키지</li>
-        </ul>
-        <a id="proWaitlist" href="#" class="mt-6 inline-flex w-full justify-center px-4 py-3 rounded-2xl bg-white border border-slate-200 font-semibold hover:bg-slate-50">
-          PRO 먼저 열기
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section id="faq" class="bg-white border-t border-slate-200">
-    <div class="max-w-6xl mx-auto px-4 py-14">
-      <h2 class="text-2xl md:text-3xl font-bold">FAQ</h2>
-
-      <div class="mt-6 grid md:grid-cols-2 gap-4">
-        <div class="rounded-3xl bg-white border border-slate-200 p-6">
-          <div class="font-semibold">메타가 심사해주는데 왜 필요해요?</div>
-          <p class="mt-2 text-sm text-slate-600">
-            심사는 “합/불” 판정이고, 이 도구는 “통과 확률을 올리는 문구/구성”을 미리 만들어 시간/비용을 줄이는 데 집중합니다.
-          </p>
-        </div>
-
-        <div class="rounded-3xl bg-white border border-slate-200 p-6">
-          <div class="font-semibold">법적으로 완벽하게 보장하나요?</div>
-          <p class="mt-2 text-sm text-slate-600">
-            아니요. 법률 자문이 아니라 일반적인 안전 가이드이며, 최종 게시 책임은 사용자에게 있습니다.
-          </p>
-        </div>
-
-        <div class="rounded-3xl bg-white border border-slate-200 p-6">
-          <div class="font-semibold">왜 “복붙 세트”가 중요해요?</div>
-          <p class="mt-2 text-sm text-slate-600">
-            실무는 결국 “필드에 넣는 문장”이 있어야 끝납니다. Primary/Headline/Desc/랜딩/DM까지 한 번에 나오면 ‘와’가 나옵니다.
-          </p>
-        </div>
-
-        <div class="rounded-3xl bg-white border border-slate-200 p-6">
-          <div class="font-semibold">PRO는 뭐가 달라져요?</div>
-          <p class="mt-2 text-sm text-slate-600">
-            AI 교정 + 업종 템플릿 + 히스토리 저장 + 팀 승인 + 근거 링크를 붙이면 “월구독”이 됩니다.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="border-t border-slate-200 bg-white">
-    <div class="max-w-6xl mx-auto px-4 py-10 text-sm text-slate-600">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <div class="font-semibold text-slate-900">AD-Guard AI</div>
-          <div class="mt-1 text-xs">※ 본 결과는 법률 자문이 아닌 일반적인 안전 가이드입니다.</div>
-        </div>
-        <div class="text-xs text-slate-500">© <span id="year"></span> AD-Guard AI</div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Toast -->
-  <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 hidden z-50">
-    <div class="px-4 py-3 rounded-2xl bg-slate-900 text-white text-sm shadow-lg">
-      <span id="toastMsg">복사했습니다</span>
+    <div class="foot" style="text-align:center">
+      © <span id="year"></span> AD-Guard AI. 문구 점검 도구 (실전용)
     </div>
   </div>
 
   <script>
-    /*****************************************************************
-     * ✅ 여기만 바꾸시면 됩니다 (필수 1개)
-     *****************************************************************/
-    const PRO_CONTACT_EMAIL = "hello@example.com"; // TODO: 본인 이메일로 바꾸세요
+    // -----------------------------
+    // Optional AI hook (production)
+    // -----------------------------
+    // GitHub Pages는 정적 사이트라 API 키를 숨길 수 없습니다.
+    // 실전 AI 교정(LLM)까지 붙이려면, 별도 서버/워커(Cloudflare Workers 등)에 API 키를 저장하고
+    // 여기서는 그 엔드포인트만 호출하는 구조가 안전합니다.
+    //
+    // 아래 값을 채우면 AI ON으로 표시되고, run 시 AI를 우선 사용합니다.
+    const AI_ENDPOINT = ""; // 예) https://your-worker.yourname.workers.dev
+    const AI_ON = !!AI_ENDPOINT;
 
-    /*****************************************************************
-     * Samples
-     *****************************************************************/
-    const SAMPLES = {
-      local: {
-        ps: "인천 서구 24시간 카페(조용한 작업/공부 공간)",
-        target: "늦게까지 공부/작업하는 20~40대",
-        offer: "첫 방문 아메리카노 1+1(기간/조건 적용)",
-        cat: "local",
-        text: "오늘부터 무조건 집중력 올라갑니다! 최고의 작업 카페! 전원 만족! 지금 오시면 100% 혜택 드려요!"
-      },
-      diet: {
-        ps: "다이어트 루틴/코칭 프로그램",
-        target: "체중 관리가 필요한 30~50대",
-        offer: "무료 상담 + 1주 식단 가이드 제공",
-        cat: "diet",
-        text: "한 달에 -7kg! 무조건 빠집니다. 부작용 없고 100% 효과 보장. 지금 문의하세요!"
-      },
-      beauty: {
-        ps: "피부 진정/보습 크림",
-        target: "민감 피부/건조함이 고민인 분",
-        offer: "첫 구매 20% 할인(기간 한정)",
-        cat: "beauty",
-        text: "이 크림은 주름이 확실히 사라져요. 3일만에 피부가 완전 달라집니다. 전원 만족!"
-      },
-      finance: {
-        ps: "부업/투자 정보 강의",
-        target: "부업을 찾는 직장인",
-        offer: "첫 강의 1만원 체험",
-        cat: "finance",
-        text: "원금보장! 매달 30% 수익 확정. 누구나 쉽게 돈 벌 수 있습니다. 지금 바로 신청하세요."
-      },
-      ai: {
-        ps: "광고 문구 자동 생성 AI",
-        target: "마케팅 담당자/소상공인",
-        offer: "첫 20회 무료",
-        cat: "ai",
-        text: "우리 AI는 100% 정확합니다. 단 10초 만에 매출이 확 올라갑니다. 무조건 성과 보장!"
-      }
-    };
+    // -----------------------------
+    // UI helpers
+    // -----------------------------
+    const $ = (sel) => document.querySelector(sel);
+    const year = new Date().getFullYear();
+    $("#year").textContent = year;
+    $("#aiState").textContent = AI_ON ? "ON" : "OFF";
 
-    /*****************************************************************
-     * Risk rules (간단 규칙 기반)
-     *****************************************************************/
-    const RULES_COMMON = [
-      {
-        id: "guarantee",
-        re: /100%|100퍼|100프로|무조건|확정|보장|즉시|단기간|최고|전원\s*만족/gi,
-        severity: 4,
-        type: "단정/보장",
-        why: "단정/보장/과장처럼 해석될 수 있어 심사 리스크가 올라갑니다.",
-        alternatives: [
-          "상황에 따라 도움이 될 수 있습니다",
-          "개인차가 있을 수 있습니다",
-          "경험/후기를 기반으로 소개드립니다"
-        ]
-      },
-      {
-        id: "no_side_effects",
-        re: /부작용\s*없|부작용\s*전혀\s*없|부작용\s*제로/gi,
-        severity: 5,
-        type: "부작용/안전 단정",
-        why: "‘부작용 없음’은 특히 건강/미용에서 민감한 단정 표현입니다.",
-        alternatives: [
-          "개인에 따라 차이가 있을 수 있습니다",
-          "사용 전 성분/주의사항을 확인해주세요",
-          "민감하신 분은 패치 테스트를 권장드립니다"
-        ]
-      },
-      {
-        id: "numbers",
-        re: /하루\s*\d+\s*(kg|키로)|\d+\s*(kg|키로)\s*(감량|빠짐)|\d+\s*일\s*만에|\d+\s*주\s*만에|\d+\s*개월\s*만에/gi,
-        severity: 3,
-        type: "수치/기간 확정",
-        why: "기간/수치를 확정적으로 제시하면 오해 소지가 커집니다.",
-        alternatives: [
-          "목표/상황에 따라 달라질 수 있습니다",
-          "개인별 진행 속도가 다를 수 있습니다",
-          "상담 후 맞춤 안내드립니다"
-        ]
-      },
-      {
-        id: "cure",
-        re: /완치|치료|약효|통증\s*완전|기미\s*완치|주름\s*사라짐/gi,
-        severity: 5,
-        type: "기타",
-        why: "치료/완치 등 의학적 확정 뉘앙스는 리스크가 큽니다.",
-        alternatives: [
-          "증상/컨디션 개선에 도움될 수 있습니다",
-          "개인차가 있을 수 있습니다",
-          "필요 시 전문가와 상담하세요"
-        ]
-      }
+    $("#btnRejJump").addEventListener("click", () => {
+      $("#iRej").scrollIntoView({behavior:"smooth", block:"center"});
+      $("#iRej").focus();
+    });
+
+    // chips
+    const chipDisclosure = $("#chipDisclosure");
+    const chipNoClaims = $("#chipNoClaims");
+    const chipNoSuperlative = $("#chipNoSuperlative");
+
+    function toggleChip(el){
+      const on = el.getAttribute("data-on") === "1";
+      el.setAttribute("data-on", on ? "0" : "1");
+    }
+    chipDisclosure.addEventListener("click", () => toggleChip(chipDisclosure));
+    chipNoClaims.addEventListener("click", () => toggleChip(chipNoClaims));
+    chipNoSuperlative.addEventListener("click", () => toggleChip(chipNoSuperlative));
+
+    // copy buttons (event delegation)
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".copyBtn");
+      if(!btn) return;
+      const sel = btn.getAttribute("data-copy");
+      const el = document.querySelector(sel);
+      const text = (el?.innerText || "").trim();
+      if(!text) return;
+      navigator.clipboard.writeText(text).then(()=>{
+        const prev = btn.textContent;
+        btn.textContent = "복사됨!";
+        setTimeout(()=>btn.textContent = prev, 900);
+      });
+    });
+
+    // -----------------------------
+    // Rule-based analyzer (Free)
+    // -----------------------------
+    const RISK = [
+      { key:"guarantee",  label:"보장/확정", level:"bad",  weight:18, patterns:[/100%/g,/무조건/g,/보장/g,/확실/g,/완치/g,/치료/g,/즉시/g,/단기간/g,/바로\s?효과/g] },
+      { key:"super",      label:"최고/1등", level:"warn", weight:12, patterns:[/1등/g,/No\.?1/ig,/최고/g,/유일/g,/국내\s?최초/g,/업계\s?최고/g,/압도적/g] },
+      { key:"mislead",    label:"오해 유발", level:"warn", weight:10, patterns:[/절대/g,/무해/g,/부작용\s?없/g,/전부\s?해결/g,/완벽/g] },
+      { key:"personal",   label:"개인특성", level:"warn", weight:10, patterns:[/당신은\s?\d+살/g,/뚱뚱한/g,/못생긴/g,/탈모인/g,/우울증/g] },
+      { key:"finance",    label:"수익확정", level:"bad",  weight:18, patterns:[/수익\s?보장/g,/원금\s?보장/g,/무조건\s?벌/g,/확정\s?수익/g] },
+      { key:"medical",    label:"의료/건강", level:"warn", weight:12, patterns:[/병원급/g,/의학적/g,/처방/g,/약/g,/질병/g,/통증\s?치료/g] },
     ];
 
-    const RULES_DIET = [
-      {
-        id: "diet_claim",
-        re: /요요\s*절대\s*없|살\s*확\s*빠짐|체지방\s*즉시/gi,
-        severity: 4,
-        type: "과장",
-        why: "다이어트 결과를 단정하면 심사/클레임 리스크가 커집니다.",
-        alternatives: [
-          "식단/운동과 함께하면 도움이 될 수 있습니다",
-          "개인 목표에 맞춰 진행합니다",
-          "생활 습관 기반으로 안내드립니다"
-        ]
-      }
+    const REWRITE_MAP = [
+      [/100%/g, "높은 만족도"],
+      [/무조건/g, "상황에 따라"],
+      [/보장/g, "도움을 드립니다"],
+      [/확실/g, "기대할 수 있습니다"],
+      [/완치/g, "개선에 도움"],
+      [/치료/g, "케어/관리"],
+      [/즉시/g, "빠르게"],
+      [/단기간/g, "짧은 기간에도"],
+      [/최고/g, "만족도를 높이는"],
+      [/1등/g, "선호도가 높은"],
+      [/유일/g, "차별화된"],
+      [/절대/g, "가능하면"],
+      [/부작용\s?없/g, "개인차가 있을 수 있음"],
+      [/전부\s?해결/g, "문제 개선에 도움"],
+      [/완벽/g, "더 나은"],
+      [/수익\s?보장/g, "성과를 목표로"],
+      [/원금\s?보장/g, "리스크를 안내하고"],
     ];
 
-    const RULES_BEAUTY = [
-      {
-        id: "beauty_claim",
-        re: /미백\s*즉시|기미\s*삭제|주름\s*완전/gi,
-        severity: 4,
-        type: "과장",
-        why: "화장품 효능을 확정적으로 말하면 오해 소지가 커집니다.",
-        alternatives: [
-          "피부 컨디션 개선에 도움될 수 있습니다",
-          "피부 타입에 따라 차이가 있을 수 있습니다",
-          "꾸준한 관리가 중요합니다"
-        ]
-      }
-    ];
-
-    const RULES_FINANCE = [
-      {
-        id: "finance_guarantee",
-        re: /원금\s*보장|수익\s*보장|수익\s*확정|손실\s*없/gi,
-        severity: 5,
-        type: "금융/수익 보장",
-        why: "수익/원금 보장 표현은 매우 민감한 리스크 요소입니다.",
-        alternatives: [
-          "손실 가능성이 있으며, 최종 판단은 본인에게 있습니다",
-          "과거 사례는 참고용입니다",
-          "위험 고지 문구를 포함하세요"
-        ]
-      },
-      {
-        id: "finance_percent",
-        re: /\d+\s*%(\s*수익)?\s*(확정|보장|매달|매월)/gi,
-        severity: 4,
-        type: "금융/수익 보장",
-        why: "수익률을 확정적으로 제시하면 리스크가 급격히 올라갑니다.",
-        alternatives: [
-          "예시는 참고용이며 결과는 달라질 수 있습니다",
-          "손실 가능성을 함께 고지하세요",
-          "수익률 확정 표현은 피하세요"
-        ]
-      }
-    ];
-
-    const RULES_AI = [
-      {
-        id: "ai_100",
-        re: /100%\s*(정확|정확도)|완벽한\s*정확/gi,
-        severity: 3,
-        type: "단정/보장",
-        why: "AI 성능을 100%로 단정하면 분쟁/신뢰 리스크가 생깁니다.",
-        alternatives: [
-          "환경/데이터에 따라 결과가 달라질 수 있습니다",
-          "가능한 범위에서 도움을 드립니다",
-          "최종 검토는 사람이 하는 것을 권장드립니다"
-        ]
-      }
-    ];
-
-    const CHECKLIST_BASE = [
-      "표기문구(유료광고/협찬/제휴/자사홍보)를 눈에 잘 띄는 위치(첫 줄/첫 문단)에 넣었나요?",
-      "‘무조건/확정/보장/100%’ 같은 단정 표현을 줄였나요?",
-      "수치/기간/효과는 개인차가 있음을 밝혔나요?",
-      "후기/사례는 ‘개인 경험’임을 명확히 했나요?",
-      "가격/조건/기간/주의사항 등 핵심 정보를 숨기지 않았나요?"
-    ];
-
-    /*****************************************************************
-     * DOM helpers
-     *****************************************************************/
-    const el = (id) => document.getElementById(id);
-    const toast = el("toast");
-    const toastMsg = el("toastMsg");
-
-    function showToast(msg) {
-      toastMsg.textContent = msg || "완료!";
-      toast.classList.remove("hidden");
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => toast.classList.add("hidden"), 1200);
+    function normalize(s){
+      return (s||"").replace(/\s+/g," ").trim();
     }
 
-    async function copyToClipboard(text) {
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast("복사했습니다 ✅");
-      } catch (e) {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-        showToast("복사했습니다 ✅");
+    function analyzeText(text, opts){
+      const t = normalize(text);
+      let score = 100;
+      const hits = [];
+
+      const noClaims = opts.noClaims;
+      const noSuper = opts.noSuper;
+
+      for(const r of RISK){
+        // 옵션으로 강화
+        if(noClaims && r.key === "guarantee"){}
+        if(noSuper && r.key === "super"){}
+
+        let found = false;
+        for(const p of r.patterns){
+          if(p.test(t)){
+            found = true;
+            break;
+          }
+        }
+        if(found){
+          hits.push(r);
+          // 가중치
+          let w = r.weight;
+          if(noClaims && r.key === "guarantee") w += 6;
+          if(noSuper && r.key === "super") w += 4;
+          score -= w;
+        }
       }
+
+      if(score < 0) score = 0;
+
+      const level = score >= 80 ? "good" : score >= 55 ? "warn" : "bad";
+
+      const reasons = [];
+      if(hits.length === 0){
+        reasons.push("문구만 기준으로는 큰 위험표현이 많이 보이지 않습니다.");
+        reasons.push("그래도 이미지/랜딩/업종 요소에 따라 심사 결과는 달라질 수 있습니다.");
+      }else{
+        for(const h of hits){
+          if(h.key === "guarantee") reasons.push("‘보장/확정/즉시/단기간’ 류 표현은 과장·오해로 분류될 수 있어 반려 리스크가 큽니다.");
+          else if(h.key === "super") reasons.push("‘최고/1등/유일/국내최초’ 류 비교·우월 표현은 근거 요구 또는 반려로 이어질 수 있습니다.");
+          else if(h.key === "mislead") reasons.push("‘절대/완벽/무해’ 같은 단정 표현은 오해 유발로 판단될 수 있습니다.");
+          else if(h.key === "finance") reasons.push("‘수익/원금 보장’은 금융·투자 관련에서 특히 강한 반려 사유가 됩니다.");
+          else if(h.key === "medical") reasons.push("의료·건강 효능 단정은 업종/랜딩과 함께 리스크가 커집니다(‘도움’ 수준 표현이 안전).");
+          else reasons.push("정책상 민감 표현으로 해석될 수 있는 단어가 포함돼 있습니다.");
+        }
+      }
+
+      return { score, level, hits, reasons };
     }
 
-    /*****************************************************************
-     * Disclosure (표기문구)
-     *****************************************************************/
-    function getRelationLabel(rel) {
-      switch (rel) {
-        case "유료광고":
-          return {
-            short: "[유료광고] 본 콘텐츠는 광고를 포함합니다.",
-            long: "[유료광고] 본 콘텐츠는 광고를 포함합니다. (경제적 이해관계가 있는 경우, 소비자가 쉽게 인지할 수 있도록 명확히 표시하는 것이 중요합니다.)",
-            tag: "#유료광고"
-          };
-        case "협찬":
-          return {
-            short: "[협찬] 제품/서비스를 제공받아 작성했습니다.",
-            long: "[협찬] 제품/서비스를 제공받아 작성했습니다. (경제적 이해관계가 있는 경우, 소비자가 쉽게 인지할 수 있도록 명확히 표시하는 것이 중요합니다.)",
-            tag: "#협찬"
-          };
-        case "제휴":
-          return {
-            short: "[제휴] 구매 시 일부 수수료를 받을 수 있습니다.",
-            long: "[제휴] 구매 시 일부 수수료를 받을 수 있습니다. (경제적 이해관계가 있는 경우, 소비자가 쉽게 인지할 수 있도록 명확히 표시하는 것이 중요합니다.)",
-            tag: "#제휴"
-          };
-        case "자사홍보":
-          return {
-            short: "[자사홍보] 자사 제품/서비스 안내입니다.",
-            long: "[자사홍보] 자사 제품/서비스 안내입니다. (소비자가 쉽게 인지할 수 있도록 표시하는 것이 좋습니다.)",
-            tag: "#자사홍보"
-          };
-        default:
-          return {
-            short: "[유료광고] 본 콘텐츠는 광고를 포함합니다.",
-            long: "[유료광고] 본 콘텐츠는 광고를 포함합니다. (경제적 이해관계가 있는 경우, 소비자가 쉽게 인지할 수 있도록 명확히 표시하는 것이 중요합니다.)",
-            tag: "#유료광고"
-          };
+    function rewriteText(text){
+      let out = text || "";
+      for(const [p, rep] of REWRITE_MAP){
+        out = out.replace(p, rep);
       }
+      // 문장 다듬기(과한 공백/중복)
+      out = out.replace(/\s{2,}/g," ").trim();
+      return out;
     }
 
-    function getPlacementGuidance() {
+    function buildPack({product, target, offer, afterText, platform}){
+      const p = normalize(product) || "상품/서비스";
+      const t = normalize(target) || "고객";
+      const o = normalize(offer) ? `(${normalize(offer)})` : "";
+      const safe = normalize(afterText);
+
+      const baseLanding = `${t}에게 필요한 ${p} — ${o} 자세히 보기`;
+      const igBody = safe
+        ? safe
+        : `${t}분들께 추천드리는 ${p}. ${o} 자세한 내용은 DM 또는 링크에서 확인해 주세요.`;
+      const headline = `${p} · ${t} 맞춤`;
+      const desc = o ? `${o} 지금 확인` : `지금 확인`;
+      const landingFirst = `${t}분들을 위한 ${p}. 과장 없이 핵심만 안내드립니다.`;
+      const dmFirst = `${t}님, ${p} 관련해서 간단히 안내드려도 될까요? 원하시는 조건이 있으시면 알려주세요.`;
+
       return [
-        "인스타: 캡션 첫 줄(또는 첫 2줄 이내)에 #유료광고/#협찬/#제휴 등 라벨을 넣으세요.",
-        "메타 광고: Primary Text 첫 문장 또는 랜딩 상단에 라벨을 보이게 두세요.",
-        "블로그: 첫 문단 시작 또는 본문 상단(스크롤 없이 보이는 위치)에 넣으세요.",
-        "카카오/문자: 메시지 첫 줄에 넣는 것이 안전합니다."
+        { title:"인스타 광고 본문", text: igBody },
+        { title:"헤드라인", text: headline },
+        { title:"설명(Description)", text: desc },
+        { title:"랜딩 첫 문장", text: landingFirst },
+        { title:"DM 첫 문장", text: dmFirst },
       ];
     }
 
-    /*****************************************************************
-     * Rules selection
-     *****************************************************************/
-    function collectRules(category) {
-      const rules = [...RULES_COMMON];
-      if (category === "diet") rules.push(...RULES_DIET);
-      if (category === "beauty") rules.push(...RULES_BEAUTY);
-      if (category === "finance") rules.push(...RULES_FINANCE);
-      if (category === "ai") rules.push(...RULES_AI);
-      return rules;
+    function translateRejection(msg){
+      const m = (msg||"").trim();
+      if(!m) return "반려 메시지가 없으면, 아래 점검 결과의 ‘이유’만 참고하시면 됩니다.";
+
+      const rules = [
+        { k:/misleading|deceptive|mislead/i, title:"오해/과장(미스리딩)", ko:"과장되거나 오해를 부를 수 있는 문구로 판단될 수 있습니다.", fix:"‘보장/확정/즉시/단기간/완치’ 같은 단정을 줄이고, ‘도움/경험/상황에 따라’ 수준으로 완화하세요." },
+        { k:/personal\s+attributes|attributes|you are|your/i, title:"개인 특성(타겟팅) 추정", ko:"사용자의 개인 특성을 단정/추정하는 표현이 문제가 될 수 있습니다.", fix:"‘당신은 OO이죠’ 같은 문장을 빼고, 일반 표현으로 바꾸세요. 예) ‘OO이신 분’ → ‘OO이 고민인 분’" },
+        { k:/health|medical|drug|treatment/i, title:"건강/의료 관련", ko:"효능 단정/치료 암시가 심사 리스크를 올립니다.", fix:"질병/치료 단정 대신 ‘관리/케어/도움’ 표현으로 바꾸고, 랜딩에서도 동일 톤을 유지하세요." },
+        { k:/unacceptable|business\s+practices/i, title:"비즈니스 관행", ko:"과도한 유인/불명확한 조건/신뢰 요소 부족이 원인일 수 있습니다.", fix:"가격/조건/환불/사업자 정보 등 신뢰 요소를 랜딩에 명확히 넣고, 문구는 과장 없이 안내형으로 바꾸세요." },
+        { k:/before\s+and\s+after|before\/after/i, title:"전/후(비포애프터)", ko:"전/후 비교(외모/체형/효과) 뉘앙스는 리스크가 큽니다.", fix:"전/후 직접 비교 표현과 이미지를 피하고, 과정/서비스 설명 중심으로 변경하세요." },
+      ];
+
+      let pick = null;
+      for(const r of rules){
+        if(r.k.test(m)){ pick = r; break; }
+      }
+      if(!pick){
+        return [
+          "반려 메시지(원문) 요약:",
+          m.slice(0, 400) + (m.length>400 ? "…" : ""),
+          "",
+          "수정 방향(보편적으로 안전한 조치):",
+          "- ‘보장/확정/즉시/단기간/1등/최고’ 같은 단정·우월 표현 제거",
+          "- 효능/결과는 ‘도움/개선 기대/개인차’ 수준으로 완화",
+          "- 랜딩(첫 문장)도 같은 톤으로 맞추기",
+        ].join("\n");
+      }
+
+      return [
+        `판단 유형: ${pick.title}`,
+        `해석: ${pick.ko}`,
+        `어떻게 바꾸면 좋나: ${pick.fix}`,
+      ].join("\n");
     }
 
-    function unique(arr) {
-      return Array.from(new Set(arr));
-    }
+    function renderResult(payload){
+      const {score, level, hits, reasons, before, after, pack, rejOut, disclosureOn} = payload;
 
-    function matchPhrases(text, re) {
-      const m = text.match(re);
-      if (!m) return [];
-      return unique(m.map(x => x.trim())).slice(0, 7);
-    }
+      $("#rScore").textContent = score.toString();
 
-    /*****************************************************************
-     * Analyzer
-     *****************************************************************/
-    function analyzeText(text, category, strictFlags) {
-      const rules = collectRules(category);
-      const hits = [];
+      const badge = $("#rBadge");
+      badge.className = "badge " + (level === "good" ? "good" : level === "warn" ? "warn" : "bad");
+      badge.textContent = level === "good" ? "통과 가능성 높음" : level === "warn" ? "주의 필요" : "반려 위험 높음";
 
-      for (const rule of rules) {
-        const phrases = matchPhrases(text, rule.re);
-        if (phrases.length) {
-          let severity = rule.severity;
-
-          // strict flags boost certain categories
-          if (strictFlags.guarantee && rule.id === "guarantee") severity = Math.min(5, severity + 1);
-          if (strictFlags.noSideEffects && rule.id === "no_side_effects") severity = 5;
-          if (strictFlags.cure && rule.id === "cure") severity = 5;
-          if (strictFlags.financeGuarantee && (rule.id === "finance_guarantee" || rule.id === "finance_percent")) severity = 5;
-
-          hits.push({
-            phraseList: phrases,
-            riskType: rule.type,
-            why: rule.why,
-            severity,
-            alternatives: rule.alternatives
-          });
+      // pills
+      const pills = $("#rPills");
+      pills.innerHTML = "";
+      if(!hits || hits.length === 0){
+        pills.innerHTML = `<span class="rp good">큰 위험표현 없음</span>`;
+      }else{
+        for(const h of hits){
+          const c = h.level === "bad" ? "bad" : h.level === "warn" ? "warn" : "good";
+          const el = document.createElement("span");
+          el.className = "rp " + c;
+          el.textContent = h.label;
+          pills.appendChild(el);
         }
       }
 
-      // score calc
-      let score = 100;
-      let penalty = 0;
-      hits.forEach(h => {
-        const countFactor = Math.min(2, h.phraseList.length); // cap
-        penalty += (h.severity * 6) * countFactor;
-      });
-
-      // strict additional penalty (if checked but not present, small; if present already, handled)
-      const strictCount = Object.values(strictFlags).filter(Boolean).length;
-      penalty += strictCount * 2;
-
-      score = Math.max(10, Math.round(score - penalty));
-
-      // score reason
-      let reason = "전반적으로 무난합니다.";
-      if (score < 60) reason = "단정/보장/수치 강조가 많아 반려 가능성이 높습니다.";
-      else if (score < 80) reason = "핵심 리스크 표현 몇 개만 완화하면 통과 확률이 올라갑니다.";
-      else reason = "큰 리스크는 적습니다. 표현을 조금만 더 부드럽게 하면 더 안전합니다.";
-
-      // summary bullets
-      const bullets = [];
-      if (score >= 85) bullets.push("좋습니다. 미세 조정만 하면 됩니다.");
-      else if (score >= 60) bullets.push("몇 개만 바꾸면 ‘게시 OK’ 수준까지 빠르게 올라갑니다.");
-      else bullets.push("안전 버전(교정 후)으로 바꾼 뒤 집행을 추천드립니다.");
-
-      if (category === "finance") bullets.push("수익/원금 ‘보장/확정’ 표현은 피하고 손실 가능성 안내를 포함하세요.");
-      if (category === "diet" || category === "beauty") bullets.push("효과 단정(부작용 없음/완치/즉시)은 완화하는 것이 안전합니다.");
-
-      bullets.push("표기문구는 첫 줄/첫 문단처럼 ‘바로 보이는 위치’에 넣으세요.");
-
-      return { score, reason, bullets, hits };
-    }
-
-    /*****************************************************************
-     * Rewriter (안전 버전 + 3 variants)
-     *****************************************************************/
-    function soften(text, category) {
-      let t = text;
-
-      // common soften
-      t = t.replace(/무조건/gi, "상황에 따라");
-      t = t.replace(/확정/gi, "기대할 수");
-      t = t.replace(/보장/gi, "도움이 될 수");
-      t = t.replace(/100%/gi, "가능한 범위에서");
-      t = t.replace(/전원\s*만족/gi, "개인차가 있을 수 있음");
-      t = t.replace(/최고/gi, "선호도가 높은");
-      t = t.replace(/즉시/gi, "빠르게");
-
-      // sensitive
-      t = t.replace(/부작용\s*없(음)?/gi, "개인에 따라 차이가 있을 수 있음");
-      t = t.replace(/완치/gi, "증상 완화에 도움");
-
-      // finance: add risk notice if not present
-      if (category === "finance" && !/손실|원금\s*손실|투자\s*위험|리스크/gi.test(t)) {
-        t += "\n\n※ 손실 가능성이 있으며, 최종 판단과 책임은 본인에게 있습니다.";
-      }
-
-      // add gentle disclaimer if not present
-      if (!/개인차|도움|참고/gi.test(t)) {
-        t += "\n\n※ 효과/결과는 개인차가 있을 수 있으며, 본 내용은 참고용입니다.";
-      }
-
-      return t.trim();
-    }
-
-    function buildVariants(ps, target, offer, afterSafe) {
-      const basePs = ps ? `${ps}` : "상품/서비스";
-      const baseOffer = offer ? ` (${offer})` : "";
-
-      const conservative =
-`[안내] ${basePs} 소개드립니다.${baseOffer}
-- 상황/개인차에 따라 결과는 달라질 수 있습니다.
-- 자세한 내용은 상담/문의로 확인해주세요.
-
-${afterSafe}`;
-
-      const standard =
-`${basePs}${baseOffer}
-바쁘신 분들도 부담 없이 시작할 수 있게 준비했습니다.
-${target ? `추천 대상: ${target}` : ""}
-
-${afterSafe}`;
-
-      const aggressive =
-`${basePs}${baseOffer}
-지금 필요한 건 “지속 가능한 방식”입니다.
-${target ? `이런 분들께 특히 추천: ${target}` : ""}
-
-${afterSafe}`;
-
-      return { conservative: conservative.trim(), standard: standard.trim(), aggressive: aggressive.trim() };
-    }
-
-    /*****************************************************************
-     * Channel pack generator
-     *****************************************************************/
-    function clamp(str, n) {
-      if (!str) return "";
-      const s = str.replace(/\s+/g, " ").trim();
-      return s.length <= n ? s : s.slice(0, n - 1) + "…";
-    }
-
-    function buildChannelPack(relTag, labelShort, ps, target, offer, baseBody) {
-      const intro = ps ? `${ps}` : "오늘의 추천";
-      const offerTxt = offer ? ` · ${offer}` : "";
-      const targetTxt = target ? `\n(추천 대상: ${target})` : "";
-
-      const metaPrimary = `${labelShort}\n${intro}${offerTxt}\n\n${baseBody}${targetTxt}`.trim();
-      const metaHeadline = clamp(`${ps || "지금 필요한 선택"}${offer ? " · " + offer : ""}`, 40);
-      const metaDesc = clamp(`상황/개인차가 있을 수 있어요 · 자세히 보기`, 30);
-
-      const landingFirst = `${intro}${offerTxt} — 상황에 따라 도움이 될 수 있는 선택지를 안내드립니다.`;
-      const dmOpening = `안녕하세요! ${ps ? ps + " 관련해서" : "관련해서"} 짧게 안내드려도 괜찮을까요?`;
-
-      const igCaption =
-`${relTag}
-${intro}${offerTxt}
-
-${baseBody}
-${target ? `\n✅ 이런 분들께 추천: ${target}` : ""}`.trim();
-
-      const blogIntro =
-`${labelShort}
-
-${intro}${offerTxt} 관련해서, 과장 없이 핵심만 정리해드립니다.
-(결과/효과는 개인차가 있을 수 있습니다.)`;
-
-      const kakaoMsg =
-`${labelShort}
-${intro}${offerTxt}
-${clamp(baseBody.replace(/\n+/g, " "), 120)}`;
-
-      return {
-        metaPrimary,
-        metaHeadline,
-        metaDesc,
-        landingFirst,
-        dmOpening,
-        igCaption,
-        blogIntro,
-        kakaoMsg
-      };
-    }
-
-    /*****************************************************************
-     * Rejection message helper (간단 번역/추정)
-     *****************************************************************/
-    function rejectionHelper(msg) {
-      const text = (msg || "").trim();
-      if (!text) {
-        return {
-          summary: "반려 사유 메시지가 비어 있습니다. 메타에서 표시된 문장을 그대로 붙여넣어 주세요.",
-          triggers: ["반려 메시지 원문 필요"],
-          actions: ["반려 메시지 원문을 붙여넣기"]
-        };
-      }
-
-      const t = text.toLowerCase();
-
-      const triggers = [];
-      const actions = [];
-      let summary = "반려 사유를 기반으로 추정한 요약입니다.";
-
-      // common patterns
-      if (t.includes("policy") || t.includes("violat")) {
-        triggers.push("메타 광고정책 위반으로 분류됨(표현/이미지/랜딩 중 하나)");
-        actions.push("문구에서 단정/보장/과장 표현을 먼저 제거");
-        actions.push("랜딩(웹페이지)에도 동일한 과장/금지 표현이 있는지 확인");
-      }
-      if (t.includes("misleading") || t.includes("deceptive")) {
-        summary = "‘오해의 소지(미스리딩)’로 반려된 가능성이 큽니다.";
-        triggers.push("보장/확정/100%/즉시 등 단정 표현");
-        actions.push("‘개인차/상황에 따라’로 완화 + 근거 없는 확정 표현 삭제");
-      }
-      if (t.includes("personal") || t.includes("attribute")) {
-        summary = "개인 특성(건강/외모/상황) 직접 지칭 때문에 반려됐을 수 있습니다.";
-        triggers.push("‘당신은 ~다’처럼 개인 상태를 단정/지칭하는 문장");
-        actions.push("개인 지칭을 ‘일반적인 상황’으로 바꾸기");
-        actions.push("‘대상군’은 일반적으로 표현(예: ‘이런 고민이 있는 분들’)로 조정");
-      }
-      if (t.includes("health") || t.includes("medical")) {
-        summary = "건강/의학 관련 주장으로 엄격 심사를 받은 가능성이 있습니다.";
-        triggers.push("치료/완치/부작용 없음/효과 보장 등 의학적 단정");
-        actions.push("의학적 단정 제거 + ‘도움될 수 있음/개인차’로 변경");
-      }
-      if (t.includes("before") && t.includes("after")) {
-        triggers.push("전/후 비교(결과 단정) 요소가 감지될 수 있음");
-        actions.push("전/후 확정 표현·수치 표시를 완화하거나 삭제");
-      }
-      if (t.includes("landing") || t.includes("destination")) {
-        triggers.push("랜딩 페이지(도착 URL) 내용 문제");
-        actions.push("랜딩 최상단에 과장/금지표현/누락 정보(조건/가격/기간)가 있는지 확인");
-      }
-
-      if (!triggers.length) {
-        summary = "반려 사유 문구가 애매합니다. 보통은 ‘표현 단정/오해 소지/랜딩 문제’ 중 하나입니다.";
-        triggers.push("단정 표현 또는 랜딩 내용 불일치");
-        actions.push("표기문구/조건/기간을 명확히 추가");
-        actions.push("보장/확정/100% 제거 후 재심사");
-      }
-
-      return { summary, triggers, actions };
-    }
-
-    /*****************************************************************
-     * Checklist
-     *****************************************************************/
-    function renderChecklist() {
-      const ul = el("checkList");
+      // reasons
+      const ul = $("#rReasons");
       ul.innerHTML = "";
-      CHECKLIST_BASE.forEach(item => {
+      (reasons||[]).slice(0,6).forEach(r=>{
         const li = document.createElement("li");
-        li.className = "flex gap-2 items-start";
-        li.innerHTML = `<span class="mt-0.5">☑️</span><span>${item}</span>`;
+        li.textContent = r;
         ul.appendChild(li);
       });
-    }
 
-    /*****************************************************************
-     * Risk list render
-     *****************************************************************/
-    function renderRisks(hits) {
-      const container = el("riskList");
-      container.innerHTML = "";
+      $("#rBefore").textContent = before || "—";
+      $("#rAfter").textContent = after || "—";
+      $("#rRejOut").textContent = rejOut || "—";
 
-      if (!hits.length) {
+      // pack
+      const packWrap = $("#rPack");
+      packWrap.innerHTML = "";
+      (pack||[]).forEach(item=>{
         const box = document.createElement("div");
-        box.className = "rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-800";
-        box.textContent = "좋습니다! 눈에 띄는 위험표현이 거의 없습니다. (그래도 표기문구는 유지하세요.)";
-        container.appendChild(box);
-        return;
-      }
-
-      // sort by severity desc
-      hits.sort((a,b) => b.severity - a.severity).slice(0, 6).forEach((h, idx) => {
-        const card = document.createElement("div");
-        card.className = "rounded-xl border border-slate-200 p-3";
-
-        const phrases = h.phraseList.map(p => `“${p}”`).join(", ");
-
-        const alt = h.alternatives.map(a => `<li>${a}</li>`).join("");
-
-        card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold">#${idx+1} ${h.riskType}</div>
-            <div class="text-xs text-slate-500">심각도 ${h.severity}/5</div>
+        box.className = "box";
+        box.innerHTML = `
+          <div class="boxTitle">
+            <b>${item.title}</b>
+            <button class="copyBtn" data-copy="#x_${cssSafeId(item.title)}">복붙</button>
           </div>
-          <div class="mt-2 text-sm text-slate-800">${phrases}</div>
-          <div class="mt-2 text-xs text-slate-500">왜 위험? ${h.why}</div>
-          <div class="mt-2 text-sm bg-slate-50 border border-slate-200 rounded-lg p-2">
-            <div class="text-xs text-slate-500 mb-1">대체 표현 예시</div>
-            <ul class="list-disc pl-5">${alt}</ul>
-          </div>
+          <div class="mono" id="x_${cssSafeId(item.title)}"></div>
         `;
-        container.appendChild(card);
+        packWrap.appendChild(box);
+        box.querySelector(".mono").textContent = item.text;
       });
-    }
 
-    /*****************************************************************
-     * Main run
-     *****************************************************************/
-    let MODE = "check"; // check | reject
-
-    function setMode(mode) {
-      MODE = mode;
-
-      // tab styles
-      if (mode === "check") {
-        el("tabCheck").className = "px-4 py-2 rounded-2xl bg-slate-900 text-white text-sm font-semibold";
-        el("tabReject").className = "px-4 py-2 rounded-2xl bg-white border border-slate-200 text-slate-800 text-sm font-semibold hover:bg-slate-50";
-        el("checkModeBox").classList.remove("hidden");
-        el("rejectModeBox").classList.add("hidden");
-      } else {
-        el("tabReject").className = "px-4 py-2 rounded-2xl bg-slate-900 text-white text-sm font-semibold";
-        el("tabCheck").className = "px-4 py-2 rounded-2xl bg-white border border-slate-200 text-slate-800 text-sm font-semibold hover:bg-slate-50";
-        el("checkModeBox").classList.add("hidden");
-        el("rejectModeBox").classList.remove("hidden");
+      // disclosure
+      const dWrap = $("#disclosureWrap");
+      if(disclosureOn){
+        dWrap.classList.remove("hidden");
+        const d = $("#rDisclosure");
+        d.innerHTML = "";
+        const items = buildDisclosureSet();
+        items.forEach(it=>{
+          const box = document.createElement("div");
+          box.className = "box";
+          box.innerHTML = `
+            <div class="boxTitle">
+              <b>${it.title}</b>
+              <button class="copyBtn" data-copy="#d_${cssSafeId(it.title)}">복붙</button>
+            </div>
+            <div class="mono" id="d_${cssSafeId(it.title)}"></div>
+            <div class="hint">${it.hint}</div>
+          `;
+          d.appendChild(box);
+          box.querySelector(".mono").textContent = it.text;
+        });
+      }else{
+        dWrap.classList.add("hidden");
       }
 
-      // reset output
-      el("emptyState").classList.remove("hidden");
-      el("resultWrap").classList.add("hidden");
-      el("rejectionHelperBox").classList.add("hidden");
-      showToast(mode === "check" ? "광고 문구 점검 모드" : "반려 사유 번역기 모드");
+      // scroll to results
+      $("#rScore").scrollIntoView({behavior:"smooth", block:"center"});
     }
 
-    function getStrictFlags() {
+    function cssSafeId(s){
+      return (s||"").replace(/[^a-zA-Z0-9가-힣]+/g,"_");
+    }
+
+    function buildDisclosureSet(){
+      return [
+        {
+          title:"인스타 피드/릴스 표시문구",
+          text:"광고 · 협찬을 받아 작성했습니다.",
+          hint:"권장 위치: 본문 첫 줄 또는 해시태그 앞"
+        },
+        {
+          title:"스토리 표시문구",
+          text:"유료광고 포함",
+          hint:"권장 위치: 스토리 상단에 고정(잘 보이게)"
+        },
+        {
+          title:"블로그 표시문구",
+          text:"업체로부터 제품/서비스를 제공받아 작성한 후기입니다.",
+          hint:"권장 위치: 글 서두(첫 단락) + 하단 1회"
+        },
+        {
+          title:"유튜브 설명란 표시문구",
+          text:"본 영상은 유료광고/협찬을 포함하고 있습니다.",
+          hint:"권장 위치: 설명란 상단"
+        },
+      ];
+    }
+
+    async function callAI(input){
+      // AI endpoint expects JSON and returns our schema
+      const res = await fetch(AI_ENDPOINT, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(input)
+      });
+      if(!res.ok){
+        const t = await res.text().catch(()=> "");
+        throw new Error(`AI error: ${res.status} ${t}`);
+      }
+      return await res.json();
+    }
+
+    function getInputs(){
       return {
-        guarantee: el("chkGuarantee").checked,
-        noSideEffects: el("chkNoSideEffects").checked,
-        cure: el("chkCure").checked,
-        financeGuarantee: el("chkFinanceGuarantee").checked
+        product: $("#iProduct").value,
+        platform: $("#iPlatform").value,
+        target: $("#iTarget").value,
+        offer: $("#iOffer").value,
+        context: $("#iContext").value,
+        adText: $("#iAdText").value,
+        rejectionMessage: $("#iRej").value,
+        disclosureOn: chipDisclosure.getAttribute("data-on")==="1",
+        noClaims: chipNoClaims.getAttribute("data-on")==="1",
+        noSuperlative: chipNoSuperlative.getAttribute("data-on")==="1",
       };
     }
 
-    function runCheck() {
-      const rel = el("relationship").value;
-      const platform = el("platform").value;
-      const category = el("category").value;
+    function runLocal(){
+      const inp = getInputs();
 
-      const ps = el("productService").value.trim();
-      const target = el("target").value.trim();
-      const offer = el("offer").value.trim();
+      const base = inp.adText && normalize(inp.adText) ? normalize(inp.adText) : `${normalize(inp.target)||"고객"}분들께 필요한 ${normalize(inp.product)||"상품/서비스"}. ${normalize(inp.offer)||""}`.trim();
+      const analysis = analyzeText(base, { noClaims: inp.noClaims, noSuper: inp.noSuperlative });
+      const after = rewriteText(base);
 
-      const original = el("originalText").value.trim();
-      if (!original) {
-        showToast("원문(광고 문구)을 입력해주세요");
-        return;
-      }
-
-      const strictFlags = getStrictFlags();
-
-      const analysis = analyzeText(original, category, strictFlags);
-      const label = getRelationLabel(rel);
-      const afterSafe = soften(original, category);
-      const variants = buildVariants(ps, target, offer, afterSafe);
-      const pack = buildChannelPack(label.tag, label.short, ps, target, offer, afterSafe);
-
-      // Show output
-      el("emptyState").classList.add("hidden");
-      el("resultWrap").classList.remove("hidden");
-      el("rejectionHelperBox").classList.add("hidden");
-
-      // Score
-      el("scoreText").textContent = analysis.score;
-      el("scoreBar").style.width = Math.max(5, analysis.score) + "%";
-      el("scoreHint").textContent =
-        analysis.score >= 85 ? "좋습니다. 미세 조정만 하면 됩니다."
-        : analysis.score >= 60 ? "몇 개만 바꾸면 통과 확률이 올라갑니다."
-        : "단정/보장/수치 표현을 먼저 줄이는 것을 추천드립니다.";
-
-      el("scoreReason").textContent = analysis.reason;
-
-      // Summary
-      const summaryList = el("summaryList");
-      summaryList.innerHTML = "";
-      analysis.bullets.slice(0, 4).forEach(b => {
-        const li = document.createElement("li");
-        li.textContent = b;
-        summaryList.appendChild(li);
+      const pack = buildPack({
+        product: inp.product,
+        target: inp.target,
+        offer: inp.offer,
+        afterText: after,
+        platform: inp.platform
       });
 
-      // Risks
-      renderRisks(analysis.hits);
+      const rejOut = translateRejection(inp.rejectionMessage);
 
-      // Before/After
-      el("beforeText").textContent = original;
-      el("afterSafe").textContent = afterSafe;
-
-      // Variants
-      el("vConservative").textContent = variants.conservative;
-      el("vStandard").textContent = variants.standard;
-      el("vAggressive").textContent = variants.aggressive;
-
-      // Disclosure
-      el("labelShort").textContent = label.short;
-      el("labelLong").textContent = label.long;
-
-      const pl = el("placementList");
-      pl.innerHTML = "";
-      getPlacementGuidance().forEach(x => {
-        const li = document.createElement("li");
-        li.textContent = x;
-        pl.appendChild(li);
+      renderResult({
+        score: analysis.score,
+        level: analysis.level,
+        hits: analysis.hits,
+        reasons: analysis.reasons,
+        before: base,
+        after,
+        pack,
+        rejOut,
+        disclosureOn: inp.disclosureOn
       });
-
-      // Channel pack
-      el("metaPrimary").textContent = pack.metaPrimary;
-      el("metaHeadline").textContent = pack.metaHeadline;
-      el("metaDesc").textContent = pack.metaDesc;
-      el("landingFirst").textContent = pack.landingFirst;
-      el("dmOpening").textContent = pack.dmOpening;
-      el("igCaption").textContent = pack.igCaption;
-      el("blogIntro").textContent = pack.blogIntro;
-      el("kakaoMsg").textContent = pack.kakaoMsg;
-
-      // Checklist
-      renderChecklist();
-
-      showToast("결과가 생성되었습니다 ✨");
     }
 
-    function runReject() {
-      const rel = el("relationship").value;
-      const platform = el("platform").value;
-      const category = el("category").value;
+    async function run(){
+      const inp = getInputs();
 
-      const ps = el("productService").value.trim();
-      const target = el("target").value.trim();
-      const offer = el("offer").value.trim();
-
-      const original = el("rejectedOriginalText").value.trim();
-      const rejMsg = el("rejectionMessage").value.trim();
-
-      if (!original) {
-        showToast("반려된 원문을 입력해주세요");
-        return;
-      }
-
-      const strictFlags = getStrictFlags();
-
-      // analyze original as well
-      const analysis = analyzeText(original, category, strictFlags);
-      const label = getRelationLabel(rel);
-      const helper = rejectionHelper(rejMsg);
-
-      const afterSafe = soften(original, category);
-      const variants = buildVariants(ps, target, offer, afterSafe);
-      const pack = buildChannelPack(label.tag, label.short, ps, target, offer, afterSafe);
-
-      // Show output
-      el("emptyState").classList.add("hidden");
-      el("resultWrap").classList.remove("hidden");
-      el("rejectionHelperBox").classList.remove("hidden");
-
-      // Score
-      el("scoreText").textContent = analysis.score;
-      el("scoreBar").style.width = Math.max(5, analysis.score) + "%";
-      el("scoreHint").textContent =
-        analysis.score >= 85 ? "좋습니다. 반려 메시지 기준으로만 미세 조정하면 됩니다."
-        : analysis.score >= 60 ? "리스크 표현 몇 개만 바꾸면 재심사 통과 확률이 올라갑니다."
-        : "단정/보장/수치 표현을 먼저 줄여 재심사하세요.";
-
-      el("scoreReason").textContent = `반려 메시지 참고: ${helper.summary}`;
-
-      // Summary
-      const summaryList = el("summaryList");
-      summaryList.innerHTML = "";
-      analysis.bullets.slice(0, 3).forEach(b => {
-        const li = document.createElement("li");
-        li.textContent = b;
-        summaryList.appendChild(li);
-      });
-      const liExtra = document.createElement("li");
-      liExtra.textContent = "반려 원인을 ‘문구/랜딩/타겟팅’ 중 어디인지 분리해서 고치면 빠릅니다.";
-      summaryList.appendChild(liExtra);
-
-      // Risks
-      renderRisks(analysis.hits);
-
-      // Before/After
-      el("beforeText").textContent = original;
-      el("afterSafe").textContent = afterSafe;
-
-      // Variants
-      el("vConservative").textContent = variants.conservative;
-      el("vStandard").textContent = variants.standard;
-      el("vAggressive").textContent = variants.aggressive;
-
-      // Disclosure
-      el("labelShort").textContent = label.short;
-      el("labelLong").textContent = label.long;
-
-      const pl = el("placementList");
-      pl.innerHTML = "";
-      getPlacementGuidance().forEach(x => {
-        const li = document.createElement("li");
-        li.textContent = x;
-        pl.appendChild(li);
-      });
-
-      // Channel pack
-      el("metaPrimary").textContent = pack.metaPrimary;
-      el("metaHeadline").textContent = pack.metaHeadline;
-      el("metaDesc").textContent = pack.metaDesc;
-      el("landingFirst").textContent = pack.landingFirst;
-      el("dmOpening").textContent = pack.dmOpening;
-      el("igCaption").textContent = pack.igCaption;
-      el("blogIntro").textContent = pack.blogIntro;
-      el("kakaoMsg").textContent = pack.kakaoMsg;
-
-      // Rejection helper UI
-      el("rejSummary").textContent = helper.summary;
-
-      const rejTriggers = el("rejTriggers");
-      rejTriggers.innerHTML = "";
-      helper.triggers.forEach(x => {
-        const li = document.createElement("li");
-        li.textContent = x;
-        rejTriggers.appendChild(li);
-      });
-
-      const rejActions = el("rejActions");
-      rejActions.innerHTML = "";
-      helper.actions.forEach(x => {
-        const li = document.createElement("li");
-        li.textContent = x;
-        rejActions.appendChild(li);
-      });
-
-      // Checklist
-      renderChecklist();
-
-      showToast("반려 사유 분석 결과가 생성되었습니다 ✨");
-    }
-
-    function run() {
-      if (MODE === "check") runCheck();
-      else runReject();
-    }
-
-    /*****************************************************************
-     * Safe button: replace current text with safe rewrite
-     *****************************************************************/
-    function safeTransform() {
-      const category = el("category").value;
-      if (MODE === "check") {
-        const t = el("originalText").value.trim();
-        if (!t) return showToast("원문을 입력해주세요");
-        el("originalText").value = soften(t, category);
-        el("charCount").textContent = el("originalText").value.length + "자";
-        showToast("안전 버전으로 변환했습니다");
-      } else {
-        const t = el("rejectedOriginalText").value.trim();
-        if (!t) return showToast("반려 원문을 입력해주세요");
-        el("rejectedOriginalText").value = soften(t, category);
-        showToast("반려 원문을 안전 버전으로 변환했습니다");
-      }
-    }
-
-    /*****************************************************************
-     * Clear button
-     *****************************************************************/
-    function clearAll() {
-      el("productService").value = "";
-      el("target").value = "";
-      el("offer").value = "";
-      el("originalText").value = "";
-      el("rejectedOriginalText").value = "";
-      el("rejectionMessage").value = "";
-      el("charCount").textContent = "0자";
-
-      el("emptyState").classList.remove("hidden");
-      el("resultWrap").classList.add("hidden");
-      el("rejectionHelperBox").classList.add("hidden");
-
-      showToast("초기화했습니다");
-    }
-
-    /*****************************************************************
-     * Copy buttons handler
-     *****************************************************************/
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest(".copyBtn");
-      if (!btn) return;
-      const id = btn.getAttribute("data-copy");
-      const node = document.getElementById(id);
-      if (!node) return;
-      copyToClipboard(node.textContent.trim());
-    });
-
-    el("copyAllBtn").addEventListener("click", () => {
-      if (el("resultWrap").classList.contains("hidden")) return showToast("먼저 실행하기를 눌러주세요");
-
-      const bundle =
-`[안전 점수]
-${el("scoreText").textContent}/100
-- ${el("scoreReason").textContent}
-
-[교정 전]
-${el("beforeText").textContent}
-
-[교정 후(안전)]
-${el("afterSafe").textContent}
-
-[수정본 3개]
-- 보수:
-${el("vConservative").textContent}
-
-- 표준:
-${el("vStandard").textContent}
-
-- 공격:
-${el("vAggressive").textContent}
-
-[표기문구(짧게)]
-${el("labelShort").textContent}
-
-[표기문구(길게)]
-${el("labelLong").textContent}
-
-[메타 광고 필드]
-Primary Text:
-${el("metaPrimary").textContent}
-
-Headline:
-${el("metaHeadline").textContent}
-
-Description:
-${el("metaDesc").textContent}
-
-[랜딩/DM/채널]
-랜딩 첫 문장:
-${el("landingFirst").textContent}
-
-DM 첫 문장:
-${el("dmOpening").textContent}
-
-인스타 캡션:
-${el("igCaption").textContent}
-
-블로그 인트로:
-${el("blogIntro").textContent}
-
-카카오/문자:
-${el("kakaoMsg").textContent}
-`;
-      copyToClipboard(bundle.trim());
-    });
-
-    /*****************************************************************
-     * Samples
-     *****************************************************************/
-    document.querySelectorAll(".sampleBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const key = btn.getAttribute("data-sample");
-        const s = SAMPLES[key];
-        if (!s) return;
-
-        el("productService").value = s.ps;
-        el("target").value = s.target;
-        el("offer").value = s.offer;
-        el("category").value = s.cat;
-
-        if (MODE === "check") {
-          el("originalText").value = s.text;
-          el("charCount").textContent = el("originalText").value.length + "자";
-        } else {
-          el("rejectedOriginalText").value = s.text;
-          el("rejectionMessage").value = "This ad can't run because it violates our policy on misleading claims.";
+      // If AI is ON, try AI first; fallback to local
+      if(AI_ON){
+        try{
+          const out = await callAI(inp);
+          // out should already match our UI fields
+          // But if the endpoint returns different, fall back
+          if(out && typeof out.score === "number"){
+            renderResult({
+              score: out.score,
+              level: out.level || (out.score>=80?"good":out.score>=55?"warn":"bad"),
+              hits: out.hits || [],
+              reasons: out.reasons || [],
+              before: out.before || inp.adText || "—",
+              after: out.after || "—",
+              pack: out.pack || [],
+              rejOut: out.rejOut || translateRejection(inp.rejectionMessage),
+              disclosureOn: inp.disclosureOn
+            });
+            return;
+          }
+        }catch(e){
+          console.warn(e);
         }
-
-        showToast("예시를 넣었습니다");
-      });
-    });
-
-    /*****************************************************************
-     * Tab events
-     *****************************************************************/
-    el("tabCheck").addEventListener("click", () => setMode("check"));
-    el("tabReject").addEventListener("click", () => setMode("reject"));
-
-    /*****************************************************************
-     * Main buttons
-     *****************************************************************/
-    el("runBtn").addEventListener("click", run);
-    el("safeBtn").addEventListener("click", safeTransform);
-    el("clearBtn").addEventListener("click", clearAll);
-
-    /*****************************************************************
-     * Char count
-     *****************************************************************/
-    el("originalText").addEventListener("input", () => {
-      el("charCount").textContent = el("originalText").value.length + "자";
-    });
-
-    /*****************************************************************
-     * Waitlist mailto
-     *****************************************************************/
-    function mailtoLink(plan) {
-      const subject = encodeURIComponent(`[AD-Guard AI] ${plan} 대기명단 신청`);
-      const body = encodeURIComponent(
-        `안녕하세요.\n\nAD-Guard AI ${plan} 대기명단 신청합니다.\n\n- 성함/닉네임:\n- 연락처(선택):\n- 주로 쓰는 플랫폼(메타/인스타/블로그/기타):\n- 업종:\n- 가장 필요한 기능 1가지:\n\n감사합니다.`
-      );
-      return `mailto:${PRO_CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+      }
+      runLocal();
     }
 
-    el("starterWaitlist").setAttribute("href", mailtoLink("Starter"));
-    el("proWaitlist").setAttribute("href", mailtoLink("Pro"));
-    el("year").textContent = new Date().getFullYear();
+    $("#btnRun").addEventListener("click", run);
 
-    /*****************************************************************
-     * Init
-     *****************************************************************/
-    setMode("check");
+    $("#btnRej").addEventListener("click", () => {
+      const msg = $("#iRej").value;
+      $("#rRejOut").textContent = translateRejection(msg);
+      $("#rRejOut").scrollIntoView({behavior:"smooth", block:"center"});
+    });
+
+    // First render
+    renderResult({
+      score: 0,
+      level: "warn",
+      hits: [],
+      reasons: ["위 입력을 채우고 버튼을 눌러주세요."],
+      before: "—",
+      after: "—",
+      pack: [],
+      rejOut: "—",
+      disclosureOn: false
+    });
   </script>
 </body>
 </html>
