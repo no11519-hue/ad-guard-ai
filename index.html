@@ -534,6 +534,9 @@
   </div>
 
   <script>
+    // (선택) 뒤로가기/새로고침 시 브라우저가 스크롤 위치를 복원해서 튀는 경우 방지
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
     // -----------------------------
     // Optional AI hook (production)
     // -----------------------------
@@ -631,10 +634,6 @@
       const noSuper = opts.noSuper;
 
       for(const r of RISK){
-        // 옵션으로 강화
-        if(noClaims && r.key === "guarantee"){}
-        if(noSuper && r.key === "super"){}
-
         let found = false;
         for(const p of r.patterns){
           if(p.test(t)){
@@ -679,7 +678,6 @@
       for(const [p, rep] of REWRITE_MAP){
         out = out.replace(p, rep);
       }
-      // 문장 다듬기(과한 공백/중복)
       out = out.replace(/\s{2,}/g," ").trim();
       return out;
     }
@@ -690,7 +688,6 @@
       const o = normalize(offer) ? `(${normalize(offer)})` : "";
       const safe = normalize(afterText);
 
-      const baseLanding = `${t}에게 필요한 ${p} — ${o} 자세히 보기`;
       const igBody = safe
         ? safe
         : `${t}분들께 추천드리는 ${p}. ${o} 자세한 내용은 DM 또는 링크에서 확인해 주세요.`;
@@ -744,7 +741,11 @@
     }
 
     function renderResult(payload){
-      const {score, level, hits, reasons, before, after, pack, rejOut, disclosureOn} = payload;
+      const {
+        score, level, hits, reasons, before, after, pack, rejOut, disclosureOn
+      } = payload;
+
+      const autoScroll = !!payload.autoScroll; // ✅ 핵심: 사용자 액션일 때만 true
 
       $("#rScore").textContent = score.toString();
 
@@ -822,8 +823,10 @@
         dWrap.classList.add("hidden");
       }
 
-      // scroll to results
-      $("#rScore").scrollIntoView({behavior:"smooth", block:"center"});
+      // ✅ 핵심 수정: 접속 직후(초기 렌더)에는 스크롤 금지
+      if(autoScroll){
+        $("#rScore").scrollIntoView({behavior:"smooth", block:"center"});
+      }
     }
 
     function cssSafeId(s){
@@ -856,7 +859,6 @@
     }
 
     async function callAI(input){
-      // AI endpoint expects JSON and returns our schema
       const res = await fetch(AI_ENDPOINT, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
@@ -887,7 +889,10 @@
     function runLocal(){
       const inp = getInputs();
 
-      const base = inp.adText && normalize(inp.adText) ? normalize(inp.adText) : `${normalize(inp.target)||"고객"}분들께 필요한 ${normalize(inp.product)||"상품/서비스"}. ${normalize(inp.offer)||""}`.trim();
+      const base = inp.adText && normalize(inp.adText)
+        ? normalize(inp.adText)
+        : `${normalize(inp.target)||"고객"}분들께 필요한 ${normalize(inp.product)||"상품/서비스"}. ${normalize(inp.offer)||""}`.trim();
+
       const analysis = analyzeText(base, { noClaims: inp.noClaims, noSuper: inp.noSuperlative });
       const after = rewriteText(base);
 
@@ -910,19 +915,17 @@
         after,
         pack,
         rejOut,
-        disclosureOn: inp.disclosureOn
+        disclosureOn: inp.disclosureOn,
+        autoScroll: true // ✅ 버튼 눌렀을 때만 스크롤
       });
     }
 
     async function run(){
       const inp = getInputs();
 
-      // If AI is ON, try AI first; fallback to local
       if(AI_ON){
         try{
           const out = await callAI(inp);
-          // out should already match our UI fields
-          // But if the endpoint returns different, fall back
           if(out && typeof out.score === "number"){
             renderResult({
               score: out.score,
@@ -933,7 +936,8 @@
               after: out.after || "—",
               pack: out.pack || [],
               rejOut: out.rejOut || translateRejection(inp.rejectionMessage),
-              disclosureOn: inp.disclosureOn
+              disclosureOn: inp.disclosureOn,
+              autoScroll: true // ✅ AI 결과도 버튼 액션이므로 스크롤
             });
             return;
           }
@@ -952,7 +956,7 @@
       $("#rRejOut").scrollIntoView({behavior:"smooth", block:"center"});
     });
 
-    // First render
+    // First render (초기 로딩: 스크롤 절대 안 함)
     renderResult({
       score: 0,
       level: "warn",
@@ -962,7 +966,8 @@
       after: "—",
       pack: [],
       rejOut: "—",
-      disclosureOn: false
+      disclosureOn: false,
+      autoScroll: false
     });
   </script>
 </body>
